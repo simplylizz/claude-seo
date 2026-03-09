@@ -21,6 +21,12 @@ except ImportError:
     print("Error: beautifulsoup4 required. Install with: pip install beautifulsoup4")
     sys.exit(1)
 
+try:
+    import lxml  # noqa: F401
+    _HTML_PARSER = "lxml"
+except ImportError:
+    _HTML_PARSER = "html.parser"
+
 
 def parse_html(html: str, base_url: Optional[str] = None) -> dict:
     """
@@ -33,7 +39,7 @@ def parse_html(html: str, base_url: Optional[str] = None) -> dict:
     Returns:
         Dictionary with extracted SEO data
     """
-    soup = BeautifulSoup(html, "lxml" if "lxml" in sys.modules else "html.parser")
+    soup = BeautifulSoup(html, _HTML_PARSER)
 
     result = {
         "title": None,

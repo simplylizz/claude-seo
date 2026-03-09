@@ -19,8 +19,13 @@ main() {
     command -v python3 >/dev/null 2>&1 || { echo "✗ Python 3 is required but not installed."; exit 1; }
     command -v git >/dev/null 2>&1 || { echo "✗ Git is required but not installed."; exit 1; }
 
-    # Check Python version
+    # Check Python version (3.10+ required)
     PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+    PYTHON_OK=$(python3 -c 'import sys; print(1 if sys.version_info >= (3, 10) else 0)')
+    if [ "${PYTHON_OK}" = "0" ]; then
+        echo "✗ Python 3.10+ is required but ${PYTHON_VERSION} was found."
+        exit 1
+    fi
     echo "✓ Python ${PYTHON_VERSION} detected"
 
     # Create directories
