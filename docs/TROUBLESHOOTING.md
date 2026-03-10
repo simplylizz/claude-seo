@@ -106,47 +106,9 @@ python -m playwright install chromium
 **Solution:**
 ```bash
 chmod +x ~/.claude/skills/seo/scripts/*.py
-chmod +x ~/.claude/skills/seo/hooks/*.py
-chmod +x ~/.claude/skills/seo/hooks/*.sh
 ```
 
 ---
-
-### Hook Not Triggering
-
-**Symptom:** Schema validation hook not running
-
-**Check:**
-
-1. Verify hook is in settings:
-```bash
-cat ~/.claude/settings.json
-```
-
-2. Ensure correct path:
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/skills/seo/hooks/validate-schema.py \"$FILE_PATH\"",
-            "exitCodes": { "2": "block" }
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-3. Test hook directly:
-```bash
-python3 ~/.claude/skills/seo/hooks/validate-schema.py test.html
-```
 
 ---
 

@@ -1,10 +1,10 @@
 ---
 name: seo-technical
 description: >
-  Technical SEO audit across 8 categories: crawlability, indexability, security,
-  URL structure, mobile, Core Web Vitals, structured data, and JavaScript
-  rendering. Use when user says "technical SEO", "crawl issues", "robots.txt",
-  "Core Web Vitals", "site speed", or "security headers".
+  Technical SEO audit across 9 categories: crawlability, indexability, security,
+  URL structure, mobile, Core Web Vitals, structured data, JavaScript rendering,
+  and IndexNow protocol. Use when user says "technical SEO", "crawl issues",
+  "robots.txt", "Core Web Vitals", "site speed", or "security headers".
 ---
 
 # Technical SEO Audit
@@ -141,6 +141,7 @@ Google updated its JavaScript SEO documentation in December 2025 with critical c
 | Core Web Vitals | ✅/⚠️/❌ | XX/100 |
 | Structured Data | ✅/⚠️/❌ | XX/100 |
 | JS Rendering | ✅/⚠️/❌ | XX/100 |
+| IndexNow | ✅/⚠️/❌ | XX/100 |
 
 ### Critical Issues (fix immediately)
 ### High Priority (fix within 1 week)

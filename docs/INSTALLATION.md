@@ -156,6 +156,4 @@ Make sure scripts are executable:
 
 ```bash
 chmod +x ~/.claude/skills/seo/scripts/*.py
-chmod +x ~/.claude/skills/seo/hooks/*.py
-chmod +x ~/.claude/skills/seo/hooks/*.sh
 ```
