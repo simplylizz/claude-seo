@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#     "matplotlib>=3.8.0,<4.0.0",
+#     "weasyprint>=61.0,<70.0",
+# ]
+# ///
 """
 Google SEO Report Generator - Professional PDF/HTML reports from API data.
 

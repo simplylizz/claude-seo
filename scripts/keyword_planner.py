@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#     "google-ads>=25.1.0,<26.0.0",
+# ]
+# ///
 """
 Google Ads API - Keyword Planner for SEO keyword research.
 

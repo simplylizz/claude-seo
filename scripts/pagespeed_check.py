@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#     "requests>=2.32.4,<3.0.0",
+#     "urllib3>=2.6.3,<3.0.0",
+# ]
+# ///
 """
 PageSpeed Insights v5 + CrUX API combined checker.
 

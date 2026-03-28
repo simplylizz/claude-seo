@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#     "google-api-python-client>=2.100.0,<3.0.0",
+#     "google-auth>=2.20.0,<3.0.0",
+#     "google-auth-httplib2>=0.2.0,<1.0.0",
+# ]
+# ///
 """
 Google Search Console Search Analytics query helper.
 

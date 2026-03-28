@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#     "requests>=2.32.4,<3.0.0",
+#     "urllib3>=2.6.3,<3.0.0",
+# ]
+# ///
 """
 CrUX History API for Core Web Vitals trends over time.
 

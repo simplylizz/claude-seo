@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#     "google-analytics-data>=0.18.0,<1.0.0",
+# ]
+# ///
 """
 GA4 Data API v1beta - organic traffic reporting.
 
