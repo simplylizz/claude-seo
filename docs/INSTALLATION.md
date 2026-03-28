@@ -40,7 +40,10 @@ cd claude-seo
 Scripts use PEP 723 inline metadata -- `uv run` resolves dependencies automatically. No venv or pip install needed.
 
 ```bash
-# Install uv if you don't have it
+# macOS
+brew install uv
+
+# Linux / macOS (without Homebrew)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 

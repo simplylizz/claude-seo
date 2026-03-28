@@ -51,6 +51,9 @@ if (Get-Command python3 -ErrorAction SilentlyContinue) {
 } elseif (Get-Command python -ErrorAction SilentlyContinue) {
     $pyVer = python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>$null
     if ($pyVer) { Write-Host "[+] Python $pyVer detected" -ForegroundColor Green }
+} elseif (Get-Command py -ErrorAction SilentlyContinue) {
+    $pyVer = py -3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>$null
+    if ($pyVer) { Write-Host "[+] Python $pyVer detected (via py launcher)" -ForegroundColor Green }
 } else {
     Write-Host "[!] Python 3 not found. uv can install it automatically if needed." -ForegroundColor Yellow
 }

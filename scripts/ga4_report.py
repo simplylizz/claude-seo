@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # /// script
+# requires-python = ">=3.10"
 # dependencies = [
 #     "google-analytics-data>=0.18.0,<1.0.0",
 # ]

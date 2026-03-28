@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # /// script
+# requires-python = ">=3.10"
 # dependencies = [
 #     "google-api-python-client>=2.100.0,<3.0.0",
 #     "google-auth>=2.20.0,<3.0.0",

@@ -45,6 +45,10 @@ uv run ~/.claude/skills/seo/scripts/fetch_page.py https://example.com
 
 If `uv` is not installed:
 ```bash
+# macOS
+brew install uv
+
+# Linux / macOS (without Homebrew)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
