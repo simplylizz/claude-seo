@@ -31,65 +31,131 @@ main() {
     fi
     echo "✓ Python ${PYTHON_VERSION} detected"
 
+    # Back up previous installation (preserve .venv)
+    BACKUP_DIR=""
+    if [ -L "${SKILL_DIR}" ]; then
+        # Previous local install left a symlink — just remove it
+        rm -f "${SKILL_DIR}"
+    elif [ -d "${SKILL_DIR}" ]; then
+        BACKUP_DIR=$(mktemp -d)
+        # Move everything except .venv to backup
+        for item in "${SKILL_DIR}"/*; do
+            [ -e "${item}" ] || [ -L "${item}" ] || continue
+            [ "$(basename "${item}")" = ".venv" ] && continue
+            mv "${item}" "${BACKUP_DIR}/"
+        done
+        # Also grab dotfiles (except .venv)
+        for item in "${SKILL_DIR}"/.[!.]*; do
+            [ -e "${item}" ] || [ -L "${item}" ] || continue
+            [ "$(basename "${item}")" = ".venv" ] && continue
+            mv "${item}" "${BACKUP_DIR}/"
+        done
+    fi
+
+    # Restore backup on failure, clean up on success
+    cleanup() {
+        local exit_code=$?
+        if [ ${exit_code} -ne 0 ] && [ -n "${BACKUP_DIR}" ] && [ -d "${BACKUP_DIR}" ]; then
+            echo "✗ Install failed, restoring previous installation..."
+            for item in "${BACKUP_DIR}"/*; do
+                [ -e "${item}" ] || [ -L "${item}" ] || continue
+                mv "${item}" "${SKILL_DIR}/"
+            done
+            for item in "${BACKUP_DIR}"/.[!.]*; do
+                [ -e "${item}" ] || [ -L "${item}" ] || continue
+                mv "${item}" "${SKILL_DIR}/"
+            done
+        fi
+        [ -n "${BACKUP_DIR}" ] && rm -rf "${BACKUP_DIR}" || true
+        [ -n "${TEMP_DIR:-}" ] && rm -rf "${TEMP_DIR}" || true
+    }
+    trap cleanup EXIT
+
     # Create directories
     mkdir -p "${SKILL_DIR}"
     mkdir -p "${AGENT_DIR}"
 
-    # Clone or update
-    TEMP_DIR=$(mktemp -d)
-    trap "rm -rf ${TEMP_DIR}" EXIT
+    # Detect if running from a local git repo checkout
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    LOCAL_REPO=""
+    if [ -f "${SCRIPT_DIR}/skills/seo/SKILL.md" ] && [ -f "${SCRIPT_DIR}/requirements.txt" ]; then
+        echo "✓ Local repo detected at ${SCRIPT_DIR}, installing via symlinks"
+        LOCAL_REPO="${SCRIPT_DIR}"
+        SOURCE_DIR="${SCRIPT_DIR}"
+    else
+        TEMP_DIR=$(mktemp -d)
+        echo "↓ Downloading Claude SEO (${REPO_TAG})..."
+        git clone --depth 1 --branch "${REPO_TAG}" "${REPO_URL}" "${TEMP_DIR}/claude-seo" 2>/dev/null
+        SOURCE_DIR="${TEMP_DIR}/claude-seo"
+    fi
 
-    echo "↓ Downloading Claude SEO (${REPO_TAG})..."
-    git clone --depth 1 --branch "${REPO_TAG}" "${REPO_URL}" "${TEMP_DIR}/claude-seo" 2>/dev/null
+    # Helper: symlink (local) or copy (remote)
+    install_item() {
+        local src="$1" dst="$2"
+        # Remove stale symlinks so cp doesn't write through them into the repo
+        [ -L "${dst}" ] && rm -f "${dst}"
+        if [ -n "${LOCAL_REPO}" ]; then
+            ln -sf "${src}" "${dst}"
+        else
+            cp -rf "${src}" "${dst}"
+        fi
+    }
 
-    # Copy skill files
+    # Install skill files
     echo "→ Installing skill files..."
-    cp -r "${TEMP_DIR}/claude-seo/skills/seo/"* "${SKILL_DIR}/"
+    for item in "${SOURCE_DIR}/skills/seo/"*; do
+        install_item "${item}" "${SKILL_DIR}/$(basename "${item}")"
+    done
 
-    # Copy sub-skills
-    if [ -d "${TEMP_DIR}/claude-seo/skills" ]; then
-        for skill_dir in "${TEMP_DIR}/claude-seo/skills"/*/; do
+    # Install sub-skills (skip seo — it's SKILL_DIR, handled above)
+    if [ -d "${SOURCE_DIR}/skills" ]; then
+        for skill_dir in "${SOURCE_DIR}/skills"/*/; do
             skill_name=$(basename "${skill_dir}")
+            [ "${skill_name}" = "seo" ] && continue
             target="${HOME}/.claude/skills/${skill_name}"
-            mkdir -p "${target}"
-            cp -r "${skill_dir}"* "${target}/"
+            # Remove stale symlinks so cp doesn't write through them
+            [ -L "${target}" ] && rm -f "${target}"
+            if [ -n "${LOCAL_REPO}" ]; then
+                rm -rf "${target}" 2>/dev/null || true
+                ln -sf "${skill_dir%/}" "${target}"
+            else
+                mkdir -p "${target}"
+                cp -rf "${skill_dir}"* "${target}/"
+            fi
         done
     fi
 
-    # Copy schema templates
-    if [ -d "${TEMP_DIR}/claude-seo/schema" ]; then
-        mkdir -p "${SKILL_DIR}/schema"
-        cp -r "${TEMP_DIR}/claude-seo/schema/"* "${SKILL_DIR}/schema/"
+    # Install schema templates
+    if [ -d "${SOURCE_DIR}/schema" ]; then
+        install_item "${SOURCE_DIR}/schema" "${SKILL_DIR}/schema"
     fi
 
-    # Copy reference docs
-    if [ -d "${TEMP_DIR}/claude-seo/pdf" ]; then
-        mkdir -p "${SKILL_DIR}/pdf"
-        cp -r "${TEMP_DIR}/claude-seo/pdf/"* "${SKILL_DIR}/pdf/"
+    # Install reference docs
+    if [ -d "${SOURCE_DIR}/pdf" ]; then
+        install_item "${SOURCE_DIR}/pdf" "${SKILL_DIR}/pdf"
     fi
 
-    # Copy agents
+    # Install agents
     echo "→ Installing subagents..."
-    cp -r "${TEMP_DIR}/claude-seo/agents/"*.md "${AGENT_DIR}/" 2>/dev/null || true
+    for agent in "${SOURCE_DIR}/agents/"*.md; do
+        [ -f "${agent}" ] || continue
+        install_item "${agent}" "${AGENT_DIR}/$(basename "${agent}")"
+    done
 
-    # Copy shared scripts
-    if [ -d "${TEMP_DIR}/claude-seo/scripts" ]; then
-        mkdir -p "${SKILL_DIR}/scripts"
-        cp -r "${TEMP_DIR}/claude-seo/scripts/"* "${SKILL_DIR}/scripts/"
+    # Install shared scripts
+    if [ -d "${SOURCE_DIR}/scripts" ]; then
+        install_item "${SOURCE_DIR}/scripts" "${SKILL_DIR}/scripts"
     fi
 
-    # Copy hooks
-    if [ -d "${TEMP_DIR}/claude-seo/hooks" ]; then
-        mkdir -p "${SKILL_DIR}/hooks"
-        cp -r "${TEMP_DIR}/claude-seo/hooks/"* "${SKILL_DIR}/hooks/"
-        chmod +x "${SKILL_DIR}/hooks/"*.sh 2>/dev/null || true
-        chmod +x "${SKILL_DIR}/hooks/"*.py 2>/dev/null || true
+    # Install hooks
+    if [ -d "${SOURCE_DIR}/hooks" ]; then
+        install_item "${SOURCE_DIR}/hooks" "${SKILL_DIR}/hooks"
     fi
 
-    # Copy extensions (optional add-ons: dataforseo, banana)
-    if [ -d "${TEMP_DIR}/claude-seo/extensions" ]; then
+    # Install extensions (optional add-ons: dataforseo, banana)
+    if [ -d "${SOURCE_DIR}/extensions" ]; then
         echo "=> Installing extensions..."
-        for ext_dir in "${TEMP_DIR}/claude-seo/extensions"/*/; do
+        for ext_dir in "${SOURCE_DIR}/extensions"/*/; do
             [ -d "${ext_dir}" ] || continue
             ext_name=$(basename "${ext_dir}")
             # Extension skills
@@ -98,29 +164,48 @@ main() {
                     [ -d "${ext_skill}" ] || continue
                     ext_skill_name=$(basename "${ext_skill}")
                     target="${HOME}/.claude/skills/${ext_skill_name}"
-                    mkdir -p "${target}"
-                    cp -r "${ext_skill}"* "${target}/"
+                    [ -L "${target}" ] && rm -f "${target}"
+                    if [ -n "${LOCAL_REPO}" ]; then
+                        rm -rf "${target}" 2>/dev/null || true
+                        ln -sf "${ext_skill%/}" "${target}"
+                    else
+                        mkdir -p "${target}"
+                        cp -rf "${ext_skill}"* "${target}/"
+                    fi
                 done
             fi
             # Extension agents
             if [ -d "${ext_dir}agents" ]; then
-                cp -r "${ext_dir}agents/"*.md "${AGENT_DIR}/" 2>/dev/null || true
+                for agent in "${ext_dir}agents/"*.md; do
+                    [ -f "${agent}" ] || continue
+                    install_item "${agent}" "${AGENT_DIR}/$(basename "${agent}")"
+                done
             fi
             # Extension references
             if [ -d "${ext_dir}references" ]; then
-                mkdir -p "${SKILL_DIR}/extensions/${ext_name}/references"
-                cp -r "${ext_dir}references/"* "${SKILL_DIR}/extensions/${ext_name}/references/"
+                if [ -n "${LOCAL_REPO}" ]; then
+                    mkdir -p "${SKILL_DIR}/extensions/${ext_name}"
+                    install_item "${ext_dir}references" "${SKILL_DIR}/extensions/${ext_name}/references"
+                else
+                    mkdir -p "${SKILL_DIR}/extensions/${ext_name}/references"
+                    cp -rf "${ext_dir}references/"* "${SKILL_DIR}/extensions/${ext_name}/references/"
+                fi
             fi
             # Extension scripts
             if [ -d "${ext_dir}scripts" ]; then
-                mkdir -p "${SKILL_DIR}/extensions/${ext_name}/scripts"
-                cp -r "${ext_dir}scripts/"* "${SKILL_DIR}/extensions/${ext_name}/scripts/"
+                if [ -n "${LOCAL_REPO}" ]; then
+                    mkdir -p "${SKILL_DIR}/extensions/${ext_name}"
+                    install_item "${ext_dir}scripts" "${SKILL_DIR}/extensions/${ext_name}/scripts"
+                else
+                    mkdir -p "${SKILL_DIR}/extensions/${ext_name}/scripts"
+                    cp -rf "${ext_dir}scripts/"* "${SKILL_DIR}/extensions/${ext_name}/scripts/"
+                fi
             fi
         done
     fi
 
-    # Copy requirements.txt to skill dir so users can retry later
-    cp "${TEMP_DIR}/claude-seo/requirements.txt" "${SKILL_DIR}/requirements.txt" 2>/dev/null || true
+    # Make requirements.txt available in skill dir
+    install_item "${SOURCE_DIR}/requirements.txt" "${SKILL_DIR}/requirements.txt"
 
     # Install Python dependencies (venv preferred, --user fallback)
     echo "→ Installing Python dependencies..."
@@ -129,7 +214,7 @@ main() {
         echo "✗ Failed to create venv at ${VENV_DIR}. Ensure python3-venv is installed."
         exit 1
     fi
-    "${VENV_DIR}/bin/pip" install --quiet -r "${TEMP_DIR}/claude-seo/requirements.txt"
+    "${VENV_DIR}/bin/pip" install --quiet -r "${SOURCE_DIR}/requirements.txt"
     echo "  ✓ Installed in venv at ${VENV_DIR}"
 
     # Optional: Install Playwright browsers (for screenshot analysis)
