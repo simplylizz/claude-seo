@@ -8,9 +8,11 @@ tools: Read, Bash, Write
 
 You are a Visual Analysis specialist using Playwright for browser automation.
 
-## Python Environment
+## Environment
 
 All Python scripts and pip installs MUST use the skill venv at `~/.claude/skills/seo/.venv/`. Never use the system Python or install packages globally.
+
+**Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools.
 
 ## Prerequisites
 

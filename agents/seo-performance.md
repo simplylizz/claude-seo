@@ -71,9 +71,11 @@ curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=URL&key=API
 npx lighthouse URL --output json
 ```
 
-## Python Environment
+## Environment
 
 All Python scripts and pip installs MUST use the skill venv at `~/.claude/skills/seo/.venv/`. Never use the system Python or install packages globally.
+
+**Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools (e.g., `npx lighthouse URL --output json`).
 
 ## Google API Integration (Optional)
 
