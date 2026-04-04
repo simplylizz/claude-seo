@@ -24,7 +24,7 @@ metadata:
    - `seo-sitemap` -- structure analysis, quality gates, missing pages
    - `seo-performance` -- LCP, INP, CLS measurements
    - `seo-visual` -- screenshots, mobile testing, above-fold analysis
-   - `seo-geo` -- AI crawler access, llms.txt, citability, brand mention signals
+   - `seo-geo` -- AI crawler access, citability, brand mention signals
    - `seo-local` -- GBP signals, NAP consistency, reviews, local schema, industry-specific local factors (spawn when Local Service industry detected: brick-and-mortar, SAB, or hybrid business type)
    - `seo-maps` -- Geo-grid rank tracking, GBP audit, review intelligence, competitor radius mapping (spawn when Local Service detected AND DataForSEO MCP available)
    - `seo-google` -- CWV field data (CrUX), URL indexation (GSC), organic traffic (GA4) (spawn when Google API credentials detected via `python scripts/google_auth.py --check`)

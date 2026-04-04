@@ -147,7 +147,7 @@ For parallel analysis during audits:
 - `seo-sitemap` -- Structure, coverage, quality gates
 - `seo-performance` -- Core Web Vitals measurement
 - `seo-visual` -- Screenshots, mobile testing, above-fold
-- `seo-geo` -- AI crawler access, llms.txt, citability, brand mention signals
+- `seo-geo` -- AI crawler access, citability, brand mention signals
 - `seo-local` -- GBP signals, NAP consistency, reviews, local schema, industry-specific local factors (conditional: spawned when Local Service detected)
 - `seo-maps` -- Geo-grid rank tracking, GBP audit, review intelligence, competitor radius mapping (conditional: spawned when Local Service detected AND DataForSEO MCP available)
 - `seo-google` -- CWV field data, URL indexation status, organic traffic trends (conditional: spawned when Google API credentials detected)

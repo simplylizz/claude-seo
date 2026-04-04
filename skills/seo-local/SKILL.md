@@ -237,7 +237,7 @@ Key local AI facts:
 - Bing Places is critical: powers ChatGPT, Copilot, Alexa
 - AI-powered local packs (mobile US) show only 1-2 businesses, 32% fewer shown (Sterling Sky)
 
-**Recommendation**: Run `/seo geo <url>` for comprehensive AI search visibility analysis including citability scoring, llms.txt check, and brand mention audit.
+**Recommendation**: Run `/seo geo <url>` for comprehensive AI search visibility analysis including citability scoring and brand mention audit.
 
 ---
 
