@@ -28,7 +28,7 @@ Google's documentation explicitly recommends JSON-LD over Microdata and RDFa.
 | Review | Individual reviews | reviewRating, author, itemReviewed, reviewBody |
 | AggregateRating | Rating summaries | ratingValue, reviewCount, bestRating, worstRating |
 | BreadcrumbList | Navigation | itemListElement with position, name, item |
-| WebSite | Site-level | name, url, potentialAction (SearchAction for sitelinks search) |
+| WebSite | Site-level (site name in SERPs) | name, url, alternateName |
 | WebPage | Page-level | name, description, datePublished, dateModified |
 | Person | Author/team | name, jobTitle, url, sameAs, image, worksFor |
 | ContactPage | Contact pages | name, url |
