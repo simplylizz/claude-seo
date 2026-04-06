@@ -38,6 +38,8 @@ Google's doorway page algorithm penalizes programmatic location pages with thin/
 | All identical lastmod | Low | Use real dates |
 | priority/changefreq | Info | Can remove |
 
+Note: `noindex` on the sitemap.xml file itself (via `X-Robots-Tag`) is OK — do not flag it. Sitemaps are discovery files, not indexable pages; Google still processes the URLs within them. Yoast and other major CMS plugins add this header by default.
+
 ## Safe vs Risky Pages
 
 ### Safe at Scale ✅
