@@ -17,7 +17,7 @@ rank tracking, GBP auditing, review intelligence, competitor radius mapping).
 claude-seo/
   CLAUDE.md                          # Project instructions (this file)
   .claude-plugin/
-    plugin.json                    # Plugin manifest (v1.8.0)
+    plugin.json                    # Plugin manifest (v1.8.1)
     marketplace.json               # Marketplace catalog for distribution
   skills/                            # 19 skills (auto-discovered)
     seo/                           # Main orchestrator skill
@@ -101,7 +101,7 @@ claude-seo/
 | `/seo content <url>` | E-E-A-T and content quality analysis |
 | `/seo schema <url>` | Schema.org detection, validation, generation |
 | `/seo sitemap <url>` | XML sitemap analysis or generation |
-| `/seo images <url>` | Image optimization analysis |
+| `/seo images <url or optimize>` | Image SEO: on-page audit, SERP analysis, file optimization |
 | `/seo geo <url>` | AI search / Generative Engine Optimization |
 | `/seo plan <type>` | Strategic SEO planning by industry |
 | `/seo programmatic` | Programmatic SEO analysis and planning |

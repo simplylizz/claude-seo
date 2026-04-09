@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2026-04-06
+
+### Added
+- **Google Images SERP**: `/seo dataforseo serp-images <keyword>` command for competitive image search analysis
+- **Image SERP Analysis**: `/seo images serp <keyword>` cross-skill command combining DataForSEO image results with on-page audit
+- **Image File Optimization**: `/seo images optimize <path>` for WebP/AVIF conversion, IPTC/XMP metadata injection, responsive variants, and compression
+- **Image ranking factors table**: documents what matters (alt text, filename, page context) vs what does not (EXIF camera data, IPTC keywords)
+- **DataForSEO field-config**: `serp.items.images` filter with 10 SEO-relevant fields (type, rank, title, alt, url, source_url, image_url, domain, encoded_url)
+- **Tool catalog reference**: `skills/seo-dataforseo/references/tool-catalog.md` for 35+ utility MCP tools (moved from inline list)
+- **Table of Contents**: added to `seo-image-gen/references/prompt-engineering.md` (326 lines, per >300 line standard)
+- Plugin keywords: `image-serp`, `google-images` added to plugin.json
+
+### Fixed
+- **Version mismatch**: unified all 19 SKILL.md files, plugin.json, and CLAUDE.md to v1.8.0 (was 1.7.0/1.7.2/1.8.0 three-way split)
+- **Broken reference path**: seo-backlinks now correctly points to `skills/seo/references/backlink-quality.md` (shared reference)
+- **Hardcoded absolute paths**: removed `~/.claude/skills/` from `agents/seo-visual.md`, `agents/seo-schema.md`, `skills/seo-image-gen/SKILL.md`, and banana extension copy (now use plugin-relative paths)
+- **seo-dataforseo line count**: moved 35-line utility tools list to reference file, reduced from 416 to 380 lines
+
+### Changed
+- seo-images description: added trigger phrases for image SERP, metadata, WebP conversion
+- seo-dataforseo description: added "Google Images" and image ranking trigger phrases
+- seo orchestrator: updated images command to reflect new SERP + optimize capabilities
+- CLAUDE.md: updated plugin version reference, images command description
+
 ## [1.7.2] - 2026-03-30
 
 ### Added

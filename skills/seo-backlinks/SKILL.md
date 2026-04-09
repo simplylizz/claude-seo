@@ -7,7 +7,7 @@ license: MIT
 compatibility: "Free: Common Crawl + verify always available. Optional: Moz API, Bing Webmaster (free signup). Premium: DataForSEO extension."
 metadata:
   author: AgriciDaniel
-  version: "1.8.0"
+  version: "1.8.1"
   category: seo
 ---
 
@@ -260,5 +260,5 @@ After completing any backlink analysis command, always offer:
 ## Reference Documentation
 
 Load on demand (do NOT load at startup):
-- `references/backlink-quality.md` -- Detailed toxic link patterns and scoring methodology
-- `references/free-backlink-sources.md` -- Source comparison, confidence weighting, setup guides
+- `skills/seo/references/backlink-quality.md` -- Detailed toxic link patterns and scoring methodology (shared reference, load when analyzing toxic links or spam scores)
+- `skills/seo/references/free-backlink-sources.md` -- Source comparison, confidence weighting, setup guides (shared reference, load when configuring free backlink APIs)

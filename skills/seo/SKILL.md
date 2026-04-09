@@ -6,7 +6,7 @@ argument-hint: "[command] [url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "1.8.0"
+  version: "1.8.1"
   category: seo
 ---
 
@@ -28,7 +28,7 @@ e-commerce, publishers, agencies). Orchestrates 16 specialized sub-skills and 11
 | `/seo page <url>` | Deep single-page analysis |
 | `/seo sitemap <url or generate>` | Analyze or generate XML sitemaps |
 | `/seo schema <url>` | Detect, validate, and generate Schema.org markup |
-| `/seo images <url>` | Image optimization analysis |
+| `/seo images <url or optimize>` | Image SEO: on-page audit, SERP analysis, file optimization |
 | `/seo technical <url>` | Technical SEO audit (9 categories) |
 | `/seo content <url>` | E-E-A-T and content quality analysis |
 | `/seo geo <url>` | AI Overviews / Generative Engine Optimization |
@@ -123,7 +123,7 @@ This skill orchestrates 15 specialized sub-skills (+ 2 extensions):
 3. **seo-technical** -- Technical SEO (9 categories)
 4. **seo-content** -- E-E-A-T and content quality
 5. **seo-schema** -- Schema markup detection and generation
-6. **seo-images** -- Image optimization
+6. **seo-images** -- Image optimization, SERP analysis, file optimization
 7. **seo-sitemap** -- Sitemap analysis and generation
 8. **seo-geo** -- AI Overviews / GEO optimization
 9. **seo-plan** -- Strategic planning with templates
