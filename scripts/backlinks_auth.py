@@ -345,8 +345,8 @@ PREMIUM: DATAFORSEO EXTENSION (paid, most comprehensive)
             anchor text, competitor gap analysis, link velocity.
 
 VERIFY CONFIGURATION:
-  python scripts/backlinks_auth.py --check
-  python scripts/backlinks_auth.py --tier
+  uv run scripts/backlinks_auth.py --check
+  uv run scripts/backlinks_auth.py --tier
 """)
 
 

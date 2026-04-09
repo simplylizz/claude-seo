@@ -10,16 +10,16 @@ You are a Visual Analysis specialist using Playwright for browser automation.
 
 ## Environment
 
-All Python scripts and pip installs MUST use the skill venv at `~/.claude/skills/seo/.venv/`. Never use the system Python or install packages globally.
+Scripts use PEP 723 inline metadata. Run them with `uv run` -- dependencies are resolved automatically.
 
 **Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools.
 
 ## Prerequisites
 
-Before capturing screenshots, ensure Playwright and Chromium are installed in the venv:
+Scripts use PEP 723 inline metadata. Run them with `uv run` -- dependencies are resolved automatically:
 
 ```bash
-pip install playwright && python -m playwright install chromium
+uv run ~/.claude/skills/seo/scripts/capture_screenshot.py https://example.com
 ```
 
 ## When Analyzing Pages

@@ -29,7 +29,7 @@ from typing import Optional
 try:
     import requests
 except ImportError:
-    print("Error: requests library required. Install with: pip install requests")
+    print("Error: requests library required. Run via: uv run scripts/commoncrawl_graph.py")
     sys.exit(1)
 
 _SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))

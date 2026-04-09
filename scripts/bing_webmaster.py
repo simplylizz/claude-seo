@@ -21,7 +21,7 @@ from urllib.parse import urlparse, quote
 try:
     import requests
 except ImportError:
-    print("Error: requests library required. Install with: pip install requests")
+    print("Error: requests library required. Run via: uv run scripts/bing_webmaster.py")
     sys.exit(1)
 
 import os
@@ -366,7 +366,7 @@ def main():
         result = {
             "status": "error",
             "data": None,
-            "error": "No Bing Webmaster API key configured. Run: python scripts/backlinks_auth.py --setup",
+            "error": "No Bing Webmaster API key configured. Run: uv run scripts/backlinks_auth.py --setup",
             "metadata": {"source": "bing_webmaster"},
         }
         if args.json:

@@ -73,7 +73,7 @@ npx lighthouse URL --output json
 
 ## Environment
 
-All Python scripts and pip installs MUST use the skill venv at `~/.claude/skills/seo/.venv/`. Never use the system Python or install packages globally.
+Scripts use PEP 723 inline metadata. Run them with `uv run` -- dependencies are resolved automatically.
 
 **Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools (e.g., `npx lighthouse URL --output json`).
 
@@ -81,8 +81,8 @@ All Python scripts and pip installs MUST use the skill venv at `~/.claude/skills
 
 If Google API credentials are configured, prefer CrUX field data over Lighthouse lab data for CWV assessment:
 ```bash
-python scripts/pagespeed_check.py URL --json
-python scripts/crux_history.py URL --json
+uv run scripts/pagespeed_check.py URL --json
+uv run scripts/crux_history.py URL --json
 ```
 Field data (28-day Chrome user average) is more representative than lab data (single Lighthouse run). Use lab data as fallback when CrUX returns 404 (insufficient traffic).
 

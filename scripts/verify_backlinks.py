@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 try:
     import requests
 except ImportError:
-    print("Error: requests library required. Install with: pip install requests")
+    print("Error: requests library required. Run via: uv run scripts/verify_backlinks.py")
     sys.exit(1)
 
 import os

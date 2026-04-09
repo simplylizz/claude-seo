@@ -53,6 +53,6 @@ Provide a structured report with:
 
 ## Environment
 
-All Python scripts and pip installs MUST use the skill venv at `~/.claude/skills/seo/.venv/`. Never use the system Python or install packages globally.
+Scripts use PEP 723 inline metadata. Run them with `uv run` -- dependencies are resolved automatically.
 
 **Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools (e.g., `npx lighthouse URL --output json`).

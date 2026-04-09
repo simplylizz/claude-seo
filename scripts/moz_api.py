@@ -22,7 +22,7 @@ from typing import Optional
 try:
     import requests
 except ImportError:
-    print("Error: requests library required. Install with: pip install requests")
+    print("Error: requests library required. Run via: uv run scripts/moz_api.py")
     sys.exit(1)
 
 # Import credential helpers (same directory)
@@ -383,7 +383,7 @@ def main():
         result = {
             "status": "error",
             "data": None,
-            "error": "No Moz API key configured. Run: python scripts/backlinks_auth.py --setup",
+            "error": "No Moz API key configured. Run: uv run scripts/backlinks_auth.py --setup",
             "metadata": {"source": "moz"},
         }
         if args.json:
