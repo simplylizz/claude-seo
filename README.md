@@ -8,12 +8,10 @@ Comprehensive SEO analysis skill for Claude Code. Covers technical SEO, on-page 
 
 ![SEO Command Demo](screenshots/seo-command-demo.gif)
 
-[![CI](https://github.com/AgriciDaniel/claude-seo/actions/workflows/ci.yml/badge.svg)](https://github.com/AgriciDaniel/claude-seo/actions/workflows/ci.yml)
+[![CI](https://github.com/simplylizz/claude-seo/actions/workflows/ci.yml/badge.svg)](https://github.com/simplylizz/claude-seo/actions/workflows/ci.yml)
 [![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/claude-code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/github/v/release/AgriciDaniel/claude-seo)](https://github.com/AgriciDaniel/claude-seo/releases)
-
-> **Blog:** [Full breakdown of the Claude Code SEO stack](https://agricidaniel.com/blog/claude-code-seo-stack) | [v1.7.2 release: Firecrawl backlink analysis](https://agricidaniel.com/blog/claude-seo-172-firecrawl-backlink-analysis)
+[![Version](https://img.shields.io/github/v/release/simplylizz/claude-seo)](https://github.com/simplylizz/claude-seo/releases)
 
 ## Table of Contents
 
@@ -35,16 +33,16 @@ Comprehensive SEO analysis skill for Claude Code. Covers technical SEO, on-page 
 
 ```bash
 # Add marketplace (one-time)
-/plugin marketplace add AgriciDaniel/claude-seo
+/plugin marketplace add simplylizz/claude-seo
 
 # Install plugin
-/plugin install claude-seo@AgriciDaniel-claude-seo
+/plugin install claude-seo@simplylizz-claude-seo
 ```
 
 ### Manual Install (Unix/macOS/Linux)
 
 ```bash
-git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
+git clone --depth 1 https://github.com/simplylizz/claude-seo.git
 bash claude-seo/install.sh
 ```
 
@@ -52,19 +50,19 @@ bash claude-seo/install.sh
 <summary>One-liner (curl)</summary>
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/simplylizz/claude-seo/main/install.sh | bash
 ```
 
 Or via [install.cat](https://install.cat):
 
 ```bash
-curl -fsSL install.cat/AgriciDaniel/claude-seo | bash
+curl -fsSL install.cat/simplylizz/claude-seo | bash
 ```
 
 Prefer to review the script before running?
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh > install.sh
+curl -fsSL https://raw.githubusercontent.com/simplylizz/claude-seo/main/install.sh > install.sh
 cat install.sh        # review
 bash install.sh       # run when satisfied
 rm install.sh
@@ -75,7 +73,7 @@ rm install.sh
 ### Windows (PowerShell)
 
 ```powershell
-git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
+git clone --depth 1 https://github.com/simplylizz/claude-seo.git
 powershell -ExecutionPolicy Bypass -File claude-seo\install.ps1
 ```
 
@@ -262,7 +260,7 @@ See `schema/templates.json` for ready-to-use JSON-LD snippets.
 ## Uninstall
 
 ```bash
-git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
+git clone --depth 1 https://github.com/simplylizz/claude-seo.git
 bash claude-seo/uninstall.sh
 ```
 
@@ -270,7 +268,7 @@ bash claude-seo/uninstall.sh
 <summary>One-liner (curl)</summary>
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/simplylizz/claude-seo/main/uninstall.sh | bash
 ```
 
 </details>
@@ -329,7 +327,7 @@ Claude SEO is part of a family of Claude Code skills that work together:
 
 | Skill | What it does | How it connects |
 |-------|-------------|-----------------|
-| [Claude SEO](https://github.com/AgriciDaniel/claude-seo) | SEO analysis, audits, schema, GEO | Core -- analyzes sites, generates action plans |
+| [Claude SEO](https://github.com/simplylizz/claude-seo) | SEO analysis, audits, schema, GEO | Core -- analyzes sites, generates action plans |
 | [Claude Blog](https://github.com/AgriciDaniel/claude-blog) | Blog writing, optimization, scoring | Companion -- write content optimized by SEO findings |
 | [Claude Banana](https://github.com/AgriciDaniel/banana-claude) | AI image generation via Gemini | Shared -- generates images for SEO assets and blog posts |
 | [AI Marketing Claude](https://github.com/zubair-trabzada/ai-marketing-claude) | Copywriting, emails, social, ads, funnels, CRO | Community -- post-audit marketing action from SEO findings |
@@ -359,4 +357,4 @@ Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before sub
 
 ---
 
-Built for Claude Code by [@AgriciDaniel](https://github.com/AgriciDaniel)
+Originally built by [@AgriciDaniel](https://github.com/AgriciDaniel). Forked and maintained by [@simplylizz](https://github.com/simplylizz).
