@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "requests>=2.28.0,<3.0.0",
+# ]
+# ///
 """
 Common Crawl Web Graph parser for Claude SEO.
 
