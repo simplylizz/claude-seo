@@ -127,6 +127,7 @@ claude-seo/
 - Scripts use PEP 723 inline metadata; run via `uv run`
 - Test with `uv run pytest` after changes (if applicable)
 - **Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools on demand (e.g., `npx lighthouse URL --output json`).
+- **Translations (`translations/`) are not maintained in this fork.** They come from upstream and may contain outdated instructions (e.g., bare `python3`/`pip` instead of `uv run`). Do not update or fix them — they will be overwritten on the next upstream merge anyway.
 
 ## Security Rules
 
