@@ -16,10 +16,10 @@ Data source: s3://commoncrawl/projects/hyperlinkgraph/
 Releases: Quarterly (cc-main-YYYY-WW)
 
 Usage:
-    python commoncrawl_graph.py example.com --json
-    python commoncrawl_graph.py example.com --update --json
-    python commoncrawl_graph.py --info --json
-    python commoncrawl_graph.py example.com --top-referrers 20 --json
+    uv run commoncrawl_graph.py example.com --json
+    uv run commoncrawl_graph.py example.com --update --json
+    uv run commoncrawl_graph.py --info --json
+    uv run commoncrawl_graph.py example.com --top-referrers 20 --json
 """
 
 import argparse

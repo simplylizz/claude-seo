@@ -7,8 +7,8 @@ the user. Catches common false findings, inconsistencies, and misleading
 claims that instruction-based checklists might miss.
 
 Usage:
-    python validate_backlink_report.py --report report.json --json
-    python validate_backlink_report.py --report report.json
+    uv run validate_backlink_report.py --report report.json --json
+    uv run validate_backlink_report.py --report report.json
 
 Input: JSON file with backlink analysis data containing keys:
   - cc_data: Common Crawl results

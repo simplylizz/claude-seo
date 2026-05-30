@@ -52,8 +52,16 @@ node_modules/
 *.zip
 *.tar.gz
 
-# Screenshots (generated during analysis)
-screenshots/
+# Screenshots: ignore directory contents by default (audit outputs grow fast);
+# README-referenced assets are whitelisted below. Note: we use screenshots/*
+# (not screenshots/) so the `!screenshots/foo` re-include rules work.
+screenshots/*
+!screenshots/seo-command-demo.gif
+!screenshots/seo-audit-demo.gif
+
+# Brand kit reference renders (PNG snapshots of the SVG comparison page).
+# The SVGs themselves under assets/ ship; the PNGs are scratch references.
+branding/*.png
 
 # Temporary analysis files
 *-AUDIT-REPORT.md
@@ -101,6 +109,10 @@ seo command demo.gif
 Google-SEO-Report-*.html
 Google-SEO-Report-*.pdf
 
+# Claude Code local config (project-specific permissions, not for repo)
+.claude/
+.superpowers/
+
 # Site-specific analysis outputs
 LOCAL-SEO-ANALYSIS-*.md
 LOCAL-SEO-ANALYSIS-*.html
@@ -112,9 +124,42 @@ dirigo-seo-images-review.html
 # Site-specific scripts
 indexnow-submit.sh
 
+# SEO Drift Monitor (SQLite baselines)
+*.db
+
+# Generated cluster maps
+cluster-map.html
+CLUSTER-REPORT*.md
+
+# Generated SXO reports
+SXO-ANALYSIS*.md
+
+# Generated drift reports
+DRIFT-REPORT*.md
+DRIFT-COMPARISON*.html
+
+# Generated e-commerce reports
+ECOMMERCE-ANALYSIS*.md
+
 # Generated setup guides
 Google-API-Setup-Guide-*.html
 scripts/generate_setup_guide.py
 
 # Generated site builds
 site/
+
+# Git worktrees (isolated workspaces for parallel branch work)
+.worktrees/
+
+# Marketing / promo artifacts (don't ship with the repo)
+claude-seo-slides/
+claude-seo-v*-release.html
+video-script-*.md
+youtube-shorts-*.md
+youtube-description*.md
+
+# Release decks + Remotion video work (mirrors claude-ads pattern: in-tree, untracked)
+presentations/
+
+# Internal implementation plans / specs (working notes, not user docs)
+docs/superpowers/

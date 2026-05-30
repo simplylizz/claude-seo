@@ -12,7 +12,7 @@ argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "1.8.2"
+  version: "2.0.0"
   category: seo
 ---
 
@@ -103,6 +103,23 @@ In November 2025, Google's Chromium team reversed its 2022 decision and announce
 <!-- Above fold - eager load (default) -->
 <img src="hero.jpg" alt="Hero image">
 ```
+
+#### Detected lazy-loader methods (`lazy_method` field)
+
+`scripts/parse_html.py` classifies each image's lazy-loading mechanism via the
+`lazy_method` field on every image entry. Five values:
+
+| `lazy_method` | Signal detected | Common stack |
+|---|---|---|
+| `native` | `loading="lazy"` HTML attribute | Modern browsers, plain HTML |
+| `perfmatters` | `data-perfmatters-src`/`-srcset` OR class `perfmatters-lazy` | WordPress + Perfmatters plugin |
+| `ewww` | `data-ewww-src` / `data-eio` OR class `lazyload-eio` | WordPress + EWWW Image Optimizer |
+| `js-generic` | `data-src` / `data-lazy-src` / `data-original` / `data-srcset` OR class `lazyload`/`lazyloaded`/`lazy` | Lazysizes, vanilla-lazyload, jQuery plugins |
+| `none` | Neither attribute nor class signal | Page is not lazy-loading this image |
+
+When auditing image SEO, report `lazy_method` alongside `loading` so users know
+whether their site is using a JS-driven lazy-loader (in which case the native
+`loading="lazy"` attribute is intentionally absent — that is not a regression).
 
 ### `fetchpriority="high"` for LCP Images
 
@@ -288,6 +305,62 @@ convert input.jpg \
 
 **IMPORTANT:** WebP supports EXIF and XMP but NOT IPTC natively. For WebP files,
 use XMP fields instead of IPTC. exiftool handles this conversion automatically.
+
+### AI-Generated Images: `DigitalSourceType` (Merchant Center requirement)
+
+For product images produced by generative AI, **Google Merchant Center requires**
+IPTC `DigitalSourceType: TrainedAlgorithmicMedia` metadata. This is an
+operational policy requirement, not a ranking factor — feeds missing this label
+on AI-generated imagery can be disapproved.
+
+Primary source:
+https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
+(references the underlying Merchant Center policy on AI media labeling).
+
+**Audit command:**
+
+```bash
+# Audit a directory for the IPTC label (counts: missing, ai, captured, etc.)
+uv run scripts/iptc_ai_label.py audit ./images/ --json
+
+# Audit a single image
+uv run scripts/iptc_ai_label.py audit ./hero.webp --json
+
+# Inject the AI label into an image
+uv run scripts/iptc_ai_label.py inject ./ai-hero.webp \
+    --source-type trainedAlgorithmicMedia
+
+# Other vocabulary values:
+#   compositeSynthetic  (mix of captured + AI elements)
+#   digitalCapture      (fully captured photograph)
+```
+
+**Raw exiftool equivalents** (for ad-hoc usage):
+
+```bash
+# Inject manually
+exiftool \
+  -XMP-iptcExt:DigitalSourceType="https://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia" \
+  ai-generated-product.jpg
+
+# Audit: find images missing the label across a directory
+exiftool -if 'not $XMP-iptcExt:DigitalSourceType' \
+  -filename -DigitalSourceType *.jpg *.webp *.png
+```
+
+The IPTC vocabulary also defines:
+- `trainedAlgorithmicMedia` — fully AI-generated (use this for diffusion-model
+  product imagery)
+- `compositeSynthetic` — mixes captured + AI-generated elements
+- `digitalCapture` — fully captured photograph (no AI element)
+
+When `/seo images optimize` is run on AI-generated assets, prompt the user to
+confirm the source type and inject the matching IPTC value automatically.
+
+For **AI-generated product titles and descriptions**, Google Merchant Center
+also requires the AI-generated text to be separately specified and labeled in
+the feed. This is enforced at the feed layer, not the page layer — flag this
+in cross-reference with `seo-ecommerce`.
 
 ### Metadata Audit
 

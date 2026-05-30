@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Python Syntax Check
@@ -19,26 +22,28 @@ jobs:
           python-version: "3.10"
 
       - name: Check Python syntax
-        run: |
-          python3 -m py_compile scripts/fetch_page.py
-          python3 -m py_compile scripts/parse_html.py
-          python3 -m py_compile scripts/analyze_visual.py
-          python3 -m py_compile scripts/capture_screenshot.py
-          python3 -m py_compile scripts/google_auth.py
-          python3 -m py_compile scripts/pagespeed_check.py
-          python3 -m py_compile scripts/crux_history.py
-          python3 -m py_compile scripts/gsc_query.py
-          python3 -m py_compile scripts/gsc_inspect.py
-          python3 -m py_compile scripts/indexing_notify.py
-          python3 -m py_compile scripts/ga4_report.py
-          python3 -m py_compile scripts/google_report.py
-          python3 -m py_compile scripts/youtube_search.py
-          python3 -m py_compile scripts/nlp_analyze.py
-          python3 -m py_compile scripts/keyword_planner.py
-          python3 -m py_compile scripts/backlinks_auth.py
-          python3 -m py_compile scripts/moz_api.py
-          python3 -m py_compile scripts/bing_webmaster.py
-          python3 -m py_compile scripts/commoncrawl_graph.py
-          python3 -m py_compile scripts/verify_backlinks.py
-          python3 -m py_compile scripts/validate_backlink_report.py
-          echo "All 21 scripts passed syntax check"
+        # Glob over every tracked script so the check never drifts as scripts
+        # are added or removed. py_compile is a pure parse — no deps needed.
+        run: python3 -m py_compile scripts/*.py
+
+  test:
+    name: Test suite (manifests + sync_flow)
+    runs-on: ubuntu-latest
+    env:
+      # gh CLI honors GH_TOKEN automatically; sync_flow.py uses gh for auth.
+      # Without this, anonymous API requests hit GitHub's 60/hr per-IP rate
+      # limit and the sync_flow dry-run test fails on shared-runner IPs.
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.10"
+
+      - name: Run pytest
+        # Test/CI deps come from the `dev` group in pyproject.toml; uv resolves
+        # them into an isolated environment. Per-script runtime deps live in
+        # PEP 723 inline metadata (run scripts with `uv run scripts/<name>.py`).
+        run: uv run --group dev pytest tests/ -v

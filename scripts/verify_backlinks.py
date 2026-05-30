@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "beautifulsoup4>=4.12.0,<5.0.0",
+#     "lxml>=6.0.2,<7.0.0",
+#     "requests>=2.32.4,<3.0.0",
+#     "urllib3>=2.6.3,<3.0.0",
+# ]
+# ///
 """
 Backlink verification crawler for Claude SEO.
 
@@ -7,9 +16,9 @@ checking if the target URL appears in their outbound links. Uses HTTP HEAD
 for fast existence checks and full GET + HTML parsing for link verification.
 
 Usage:
-    python verify_backlinks.py --target https://example.com --links links.json --json
-    python verify_backlinks.py --target https://example.com --links links.json --head-only --json
-    echo '[{"source_url": "https://blog.example.org/post"}]' | python verify_backlinks.py --target https://example.com --links - --json
+    uv run verify_backlinks.py --target https://example.com --links links.json --json
+    uv run verify_backlinks.py --target https://example.com --links links.json --head-only --json
+    echo '[{"source_url": "https://blog.example.org/post"}]' | uv run verify_backlinks.py --target https://example.com --links - --json
 """
 
 import argparse

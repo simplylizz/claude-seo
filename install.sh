@@ -9,8 +9,10 @@ main() {
     AGENT_DIR="${HOME}/.claude/agents"
     REPO_URL="https://github.com/AgriciDaniel/claude-seo"
     # Pin to a specific release tag to prevent silent updates from main.
+    # This default MUST be bumped on every release. CI guard
+    # (tests/test_manifest_consistency.py) enforces this matches plugin.json.
     # Override: CLAUDE_SEO_TAG=main bash install.sh
-    REPO_TAG="${CLAUDE_SEO_TAG:-v1.8.2}"
+    REPO_TAG="${CLAUDE_SEO_TAG:-v2.0.0}"
 
     echo "════════════════════════════════════════"
     echo "║   Claude SEO - Installer             ║"

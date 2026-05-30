@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "requests>=2.32.4,<3.0.0",
+#     "urllib3>=2.6.3,<3.0.0",
+# ]
+# ///
 """
 Bing Webmaster Tools API client for Claude SEO.
 
@@ -6,9 +13,9 @@ Queries the Bing Webmaster API for inbound link data, referring domain counts,
 and competitor backlink comparison. Free for verified site owners.
 
 Usage:
-    python bing_webmaster.py links https://example.com --json
-    python bing_webmaster.py counts https://example.com --json
-    python bing_webmaster.py compare https://example.com https://competitor.com --json
+    uv run bing_webmaster.py links https://example.com --json
+    uv run bing_webmaster.py counts https://example.com --json
+    uv run bing_webmaster.py compare https://example.com https://competitor.com --json
 """
 
 import argparse

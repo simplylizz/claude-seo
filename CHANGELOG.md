@@ -5,10 +5,359 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-05-17
+
+v2 is backward-compatible by design — every v1.x command, script signature, and skill entry point still works. The release lands a hardened SSRF + DNS-rebinding safety layer, shared headless rendering across every fetcher, QRG-aligned content gates, four new Schema.org generators, five new MCP extensions, and multi-platform portability. Full narrative in [`docs/MIGRATION-v1-to-v2.md`](docs/MIGRATION-v1-to-v2.md).
+
+### Highlights
+
+- 248 tests (6.4× the v1.9.9 baseline of 39), every known SSRF bypass class closed at parse time.
+- 5 new MCP extensions: Ahrefs, SE Ranking, Profound, Bing Webmaster, Unlighthouse.
+- 4 new Schema.org generators: Reservation, OrderAction (potentialAction), DiscussionForumPosting, ProfilePage.
+- Multi-platform portability for Codex CLI, Cline, Aider (alongside existing Cursor + Antigravity).
+
+### Added
+
+- **Foundation:** `scripts/url_safety.py` (canonical SSRF + DNS-rebinding module, 83 test cases), `scripts/render_page.py` (shared Playwright Chromium renderer with `--mode auto` SPA detection, trafilatura extraction, htmldate publication-date extraction, 27 test cases). 8 fetcher subagents (seo-technical, seo-content, seo-schema, seo-geo, seo-local, seo-ecommerce, seo-backlinks, seo-sxo) now route through `render_page`.
+- **Content quality:** `content_quality.py` (QRG filler / AI-pattern / information-density scorer), `content_humanize.py` (40+ deterministic AI-phrasing replacements), `content_verify.py` (claim extraction + citation-gap detection), `domain_history.py` (WHOIS-driven expired-domain abuse check), `seo_updates.py` + `data/google-updates.json` (18 primary-source-verified Google updates, 1 documented-unverified gap-analysis claim).
+- **Technical depth:** `preload_check.py` (Speculation Rules + bfcache + prerender + LCP preload audit), `indexnow_submit.py` (Bing/Yandex/Seznam/Naver IndexNow submitter), `lcp_subparts.py` (LCP decomposition via CrUX), `unlighthouse_run.py` (multi-page Lighthouse via Unlighthouse CLI).
+- **Schema completeness:** `schema_generate.py` (`reservation`, `order`, `discussion`, `profile` subcommands), `schema_ecommerce_validate.py` (Product schema policy validator: `hasMerchantReturnPolicy`, `shippingDetails`, `MemberProgram`, EU `energyEfficiencyClass`, `ProductGroup`), reference doc `skills/seo-schema/references/deprecated-types-2024-2026.md`.
+- **AI search:** `parasite_risk.py` (site-reputation-abuse risk scanner per Nov 2024 Google policy), `skills/seo-geo/references/llmstxt-evidence.md` (evidence-based reframe of llms.txt as dev-tooling, not citation lever).
+- **Local + international + privacy:** `gbp_deprecation_lint.py` (retired GBP chat / `.business.site` / Q&A detector), `skills/seo-google/references/dma-consent-mode-v2.md` (EU CTR diagnostic + softened cookieless framing), `skills/seo-hreflang/references/machine-translation-qa.md` (untranslated-MT detection per Jan 2025 QRG §4.6.5).
+- **Portability:** `portability_check.py` (cross-platform SKILL.md frontmatter lint), AGENTS.md tool-name compatibility table for Codex CLI, Cline, Aider.
+- **Release signing:** `release_sign.py` (SHA-256 manifest of every git-tracked file), `verify_release.py` (verify a checkout against a signed manifest).
+- **Governance:** `.github/CODEOWNERS`, `.github/dependabot.yml` extended with npm ecosystem, `.github/workflows/v2.yml` (workflow_dispatch only), `SECURITY.md` uplift (threat model, 90-day coordinated disclosure timeline, residual risks).
+
+### Changed
+
+- `scripts/google_auth.py:validate_url` now delegates to `url_safety.validate_url`. Strict variant available as `url_safety.validate_url_strict`.
+- `scripts/fetch_page.py` exposes `--render {auto,always,never}`. Default `auto` runs raw fetch then renders if SPA signals detected; `always` forces Playwright; `never` preserves v1 behaviour.
+- `scripts/capture_screenshot.py` uses `url_safety.make_safe_playwright_route_handler` as defense-in-depth against subresource SSRF (data: allowed, private resolutions aborted, AF_UNSPEC IPv6-aware).
+- OAuth token files are now written with `os.open(path, O_WRONLY|O_CREAT|O_TRUNC, 0o600)` + explicit `os.fchmod(fd, 0o600)`. Legacy `0o644` files are remediated in place on next `_load_oauth_token`.
+- `plugin.json` / `marketplace.json` / `pyproject.toml` / `CITATION.cff` / `install.sh` / `install.ps1` / 32 SKILL.md files: version bumped to `2.0.0`. The 13-assertion manifest test (`tests/test_manifest_consistency.py`) gates this.
+
+### Fixed
+
+- **HIGH — DNS rebinding via redirect target.** `_pin_dns` previously intercepted only the originally-pinned hostname; redirect targets fell through to the unpatched resolver. Patched `socket.getaddrinfo` now validates every resolution while pinned. Closed in `a601268`.
+- **HIGH — Obfuscated IPv4 bypass in `validate_url`.** Decimal (`2130706433`), hex (`0x7f000001`), octal (`017700000001`), leading-zero (`127.0.0.001`, `0177.0.0.1`), and mixed-radix (`0x7f.0.0.1`) forms all returned safe. New `normalize_hostname()` canonicalizes via `socket.inet_aton`. Closed in `3c595c2`.
+- **HIGH — FQDN trailing-dot bypass.** `metadata.google.internal.` (single trailing dot) bypassed the exact-string blocklist. `normalize_hostname` now strips a single trailing dot. Closed in `3c595c2`.
+- **MEDIUM — IPv6 blind spot in Playwright route handler.** Resolver queried only `AF_INET`. Now uses `AF_UNSPEC` to catch dual-stack subresources whose AAAA record points at a private range. Closed in `3c595c2`.
+- **LOW — OAuth file-permission TOCTOU.** `os.open`'s mode argument is ignored if the file pre-existed. Explicit `os.fchmod(fd, 0o600)` on the open fd closes the race. Closed in `3c595c2`.
+
+### Breaking
+
+Two intentional behavioural breaks; full mitigation guidance in `docs/MIGRATION-v1-to-v2.md`.
+
+1. `scripts/backlinks_auth.py` no longer ships a silent SSRF-disabled fallback. If `url_safety` cannot be imported, the module raises `RuntimeError` at import time.
+2. `seo-schema` flags six retired rich-result types as **Critical** findings (`Vehicle`, `ClaimReview`, `EstimatedSalary`, `LearningVideo`, `SpecialAnnouncement`, `CourseInfo` carousel). Replacements documented in `skills/seo-schema/references/deprecated-types-2024-2026.md`.
+
+### Test coverage delta
+
+| Suite | v1.9.9 | v2.0.0 |
+|---|---:|---:|
+| Pre-existing (manifest + lazy + sync FLOW) | 39 | 39 |
+| `url_safety` (new) | — | 83 |
+| `render_page` (new) | — | 27 |
+| Content quality (new) | — | 25 |
+| Technical depth (new) | — | 17 |
+| Schema v2 (new) | — | 17 |
+| Parasite risk + extensions (new) | — | 22 |
+| GBP lint + polish (new) | — | 8 |
+| Portability (new) | — | 10 |
+| **Total** | **39** | **248** |
+
+## [1.9.9] - 2026-05-11
+
+Final 1.x patch release. v2 is in design; this release leaves the v1.x
+branch in a clean, well-documented, dependency-current state.
+
+Independently verified across 5 rounds of GPT-5.5 xhigh code review via
+the Codex CLI before each PR push. Issue #92 + issue #41 closed.
+
+### Highlights
+- Five top-level versions, 24 in-tree skills, 3 extension SKILL.md files,
+  and both install scripts triangulate to `1.9.9` atomically. CI guard
+  extended from 9 to 13 assertions covering the orchestrator SKILL.md,
+  per-skill `metadata.version`, marketplace.json metadata.description + author
+  parity, and Sub-Skills/Subagents list consistency with disk.
+- Five Dependabot dependency floor bumps merged as one batched PR after
+  isolated-venv smoke-testing of the full API surface we actually use.
+- Image audit now correctly detects JS lazy-loaders (Perfmatters, EWWW,
+  generic) rather than reporting "not lazy-loaded" on heavily-optimized
+  WordPress sites.
+
+### Fixed
+
+- **Orchestrator drift in `skills/seo/SKILL.md`** (issue #92): line 9
+  `metadata.version: "1.9.6"` was stale; descriptive headline at lines 19-21
+  still claimed "21 specialized sub-skills"; Sub-Skills numbered list at
+  176-199 included `seo-firecrawl` (which is an extension, not in `skills/`)
+  and was missing `seo-content-brief` (the PR #56 contribution). Subagents
+  bullet list had the same drift pattern (included `seo-firecrawl`, no agent
+  file on disk; missing `seo-flow`, file exists). Reconciled. Numbered list
+  now reaches 24 (the orchestrator itself is the 25th in `skills/` but does
+  not orchestrate itself), `seo-firecrawl` moved to a new "Optional
+  Extensions" subsection, Subagents list now matches `agents/seo-*.md` set
+  exactly.
+- **`marketplace.json` drift** (issue #92): `metadata.description` was
+  missing the "sub-agents" count claim that `plugins[0].description` carried;
+  plugin entry had no `author` object despite v1.9.8 release notes claiming
+  one was added in commit `8514999` (verification showed it was not). Both
+  fixed. v1.9.8 entry in this CHANGELOG corrected to reflect what actually
+  shipped.
+- **`AGENTS.md:109`** said "17 subagents"; disk has 18. Fixed.
+- **`install.sh` and `install.ps1` default tag pinned to `v1.9.0`** across 4
+  missed release bumps (v1.9.5/.6/.7/.8). Anyone running
+  `curl -fsSL .../install.sh | bash` got the April 14 release, missing FLOW
+  integration, the security audit pass, doc reconciliation, the manifest CI
+  guard plus v1.9.8 Phase B bug fixes (Windows hook, OAuth refresh, missing
+  imports, None guards). Bumped to `v1.9.9` atomically with this release.
+- **`pyproject.toml`** had drifted to `1.9.6` while plugin.json + CITATION
+  shipped at 1.9.8. Bumped to 1.9.9 with the release.
+- **23 in-tree skill `metadata.version` fields** were stuck at `1.9.6`; 3
+  extension SKILL.md files were at `1.9.0`/`1.7.2`. All bumped to `1.9.9`.
+  `seo-content-brief` deliberately stays at `1.0.0` (community contribution,
+  CI allowlist).
+- **Image audit (issue #41)**: `scripts/parse_html.py` now classifies each
+  image's lazy-loading mechanism in a `lazy_method` field with five values:
+  `native | perfmatters | ewww | js-generic | none`. Sites running Perfmatters,
+  EWWW Image Optimizer, lazysizes, vanilla-lazyload, or jQuery lazy-loaders
+  are no longer mis-reported as "not lazy-loaded". `skills/seo-page/SKILL.md`
+  and `skills/seo-images/SKILL.md` are updated to consume the new field.
+
+### Added
+
+- **CI guard extension (9 -> 13 assertions)** in
+  `tests/test_manifest_consistency.py`:
+  - `test_orchestrator_sub_skills_list_matches_disk`: Sub-Skills list must
+    equal `set(skills/*) - {seo}`; no duplicates. Regex scoped to the
+    `## Sub-Skills` section via a new `_extract_section()` helper.
+  - `test_orchestrator_subagents_list_matches_disk`: Subagents bullet list
+    must equal `set(agents/seo-*.md)`; no duplicates. Bullet-anchored regex.
+  - `test_skill_metadata_versions_match_plugin_json`: every
+    `skills/*/SKILL.md` and `extensions/*/skills/*/SKILL.md` `metadata.version`
+    must equal `plugin.json` version, with `COMMUNITY_OVERRIDES` allowlist
+    `{"seo-content-brief": "1.0.0"}`. Scoped to YAML frontmatter only via
+    a new `_extract_frontmatter()` helper, so a fenced code example showing
+    `version: "..."` cannot satisfy the check.
+  - `test_marketplace_metadata_and_author_parity`: marketplace.json
+    `metadata.description` includes both counts and they match plugin.json;
+    plugin entry `author` parities plugin.json author for `name`, `email`,
+    AND `url`.
+- **`tests/test_lazy_detection.py`** (new): 11 unit tests covering all
+  `_detect_lazy_method()` branches plus an integration check on `parse_html()`.
+- **CI workflow** (`.github/workflows/ci.yml`): test job now installs
+  `beautifulsoup4` alongside `pytest`, required by the new lazy-detection
+  test that exercises real BeautifulSoup parsing.
+
+### Changed
+
+- **5 Python dependency floor bumps** (batched as a single PR after isolated-
+  venv smoke testing — see [PR #94]):
+
+  | Package | Floor before | Floor after | Source PR |
+  |---|---|---|---|
+  | `playwright` | 1.56.0 | 1.59.0 | #80 |
+  | `weasyprint` | 61.0 | 68.1 | #78 |
+  | `openpyxl` | 3.1.0 | 3.1.5 | #76 |
+  | `google-api-python-client` | 2.100.0 | 2.196.0 | #77 |
+  | `google-auth-oauthlib` | 1.0.0 | 1.4.0 | #79 |
+
+  All five upper bounds preserved. No CVE-driven escalations.
+
+  **Caveat**: `google-auth-oauthlib` 1.4.0 drops Python 3.9 support. This
+  repo's `pyproject.toml` requires Python `>=3.10` already, so no impact for
+  the declared support matrix. External consumers still on 3.9 should pin
+  `google-auth-oauthlib<1.4.0` themselves.
+
+### Deferred to v2
+
+The following items are out of scope for v1.9.9 to keep this a clean patch
+release. v2 will be a separate design conversation:
+
+- **#11** SPA / CSR audit support (7-phase implementation; PR #90 Limitations
+  section remains the patch-appropriate response)
+- **#51** Subagent research persistence (changes documented output contract
+  across 15 agent files; v2 will define a persistence convention shared by
+  `seo-audit`, `seo-drift`, `seo-cluster`)
+- **#61** `google_report.py --type full` audit-schema handling (no regression
+  baseline fixture corpus exists; v2 will ship one with the bug fix)
+- **#89** uv adoption (issue itself labels v2.x candidate; preserves
+  `requirements.txt` format as migration headroom)
+- **#53** seo-notebooklm skill (depends on unofficial wrapper, 536 lines of
+  unreviewed credential code; v2 will define an "experimental skills" tier)
+- **PR #46** path resolution + macOS SSL: `pip-system-certs` is a new
+  dependency that violates v1.9.9's no-new-deps non-goal. v2 will land the
+  full macOS support story.
+
+### Compatibility / migration
+
+- No breaking changes. Patch release per SemVer.
+- The orchestrator's Sub-Skills numbered list was renumbered (insertion of
+  `seo-content-brief`, removal of `seo-firecrawl`). Any downstream consumer
+  that referenced sub-skills by **index** rather than **name** would break;
+  grep found no such consumer in this repo, but third-party docs that
+  hard-coded "skill 21 is seo-firecrawl" would need updating.
+- `/seo audit` still does NOT persist subagent research/findings between
+  runs (this is the intentional v1.x contract; v2 will revisit per #51).
+
+## [1.9.8] - 2026-05-09
+
+### Fixed
+- **Skill-count drift returned via PR #56.** When the `seo-content-brief` skill
+  was merged into v1.9.7 it added a 21st core skill, but the manifest
+  reconciliation in v1.9.7 had locked the canonical phrasing at "20 core" and
+  was not re-run after Phase C. Result: plugin.json, marketplace.json,
+  README.md, CLAUDE.md, AGENTS.md, and docs/ARCHITECTURE.md all under-claimed
+  by one. Reconciled to "25 sub-skills (21 core + 1 orchestrator + 1 framework
+  integration + 2 extension mirrors)".
+
+### Added
+- **`tests/test_manifest_consistency.py`**: pytest suite that asserts
+  plugin.json + marketplace.json claimed counts match the actual on-disk
+  count of `skills/*/SKILL.md` and `agents/seo-*.md`, that plugin.json and
+  marketplace.json descriptions agree on the canonical math, that user-visible
+  docs (README, CLAUDE.md, AGENTS.md) reference the same skill count, and that
+  plugin.json `version` and CITATION.cff `version` triangulate. Closes the
+  systemic gap that allowed two skill-count drift incidents in v1.9.7.
+- **`pytest tests/` job in `.github/workflows/ci.yml`**: runs the new manifest
+  consistency suite on every push to main and every pull request, gating
+  future skill additions behind matching documentation updates.
+
+### Changed
+- **`uninstall.sh` and `uninstall.ps1` now use glob enumeration** rather than a
+  hardcoded skill list. The previous scripts had been frozen at v1.4.0-era
+  state and missed 12 sub-skills and 11 sub-agents added between v1.5 and
+  v1.9.8 (`seo-backlinks`, `seo-cluster`, `seo-content-brief`, `seo-dataforseo`,
+  `seo-drift`, `seo-ecommerce`, `seo-flow`, `seo-google`, `seo-image-gen`,
+  `seo-local`, `seo-maps`, `seo-sxo` and the corresponding agents). Anyone who
+  ran the old uninstaller got half a cleanup. Glob enumeration auto-tracks
+  future skill additions without requiring uninstaller maintenance. Sandbox
+  test confirms the new scripts remove every `seo` and `seo-*` skill plus
+  every `seo-*.md` agent while leaving sibling skills (e.g. `blog-writer`,
+  `security`) untouched.
+- This release rolls forward two commits that landed on main after the v1.9.7
+  tag was cut:
+  - `8514999`: marketplace metadata polish (added `category: "marketing"`,
+    `homepage: https://claude-seo.md`, and a 14-keyword array to the
+    marketplace.json plugin entry). The `author` object for the plugin entry
+    was intentionally scoped here too but did not land in this commit; it
+    lands in v1.9.9 (issue #92).
+  - `66a7485`: em-dash sweep on user-visible AGENTS.md and CHANGELOG.md
+  Both were intentionally scoped at v1.9.7 but landed post-tag. v1.9.8 captures
+  them properly.
+
+## [1.9.7] - 2026-05-09
+
+### Fixed
+- **Skill-count drift across 5 manifests**: `plugin.json` ("20 core sub-skills"),
+  `marketplace.json` ("21 core sub-skills"), `CLAUDE.md` line 7 ("21 core sub-skills"),
+  `AGENTS.md` line 8 ("20 core sub-skills") + line 84 ("23 skills"), and `README.md`
+  line 7 ("21 core sub-skills") all contradicted each other. Reconciled to canonical
+  phrasing: "24 sub-skills (20 core + 1 orchestrator + 1 framework integration +
+  2 extension mirrors)".
+- **Sub-agent count drift**: `CLAUDE.md` claimed "16 core subagents (+ 2 extension
+  agents, 18 total)" while `AGENTS.md` claimed "15 core subagents (+ 2 extension
+  agents, 17 total)". Reconciled to: "18 sub-agents (15 core + 1 framework integration +
+  2 extension mirrors)".
+- **`CLAUDE.md` self-contradiction**: line 23 stated `plugin.json (v1.9.0)`; updated
+  to current `v1.9.7`.
+- **`marketplace.json` description fields**: both `metadata.description` (top-level)
+  and `plugins[0].description` now use canonical phrasing.
+- **`CITATION.cff` version drift**: was stuck at `1.8.2` (six minor versions behind);
+  bumped to match `plugin.json` at `1.9.7` with current release date.
+
+### Added
+- **`.github/dependabot.yml`**: weekly Dependabot updates for pip and GitHub Actions
+  ecosystems (closes supply-chain hygiene gap).
+- **`CODE_OF_CONDUCT.md`**: Contributor Covenant 2.1, closing GitHub Community
+  Standards gap.
+- **`.github/workflows/ci.yml` `permissions:` block**: restricts `GITHUB_TOKEN` to
+  `contents: read` at workflow root (least-privilege; was previously default scope).
+
+### Changed
+- Patch release driven by repository hygiene + marketplace-readiness preparation.
+  No skill behavior changes, no breaking changes, no script changes.
+
+### Removed
+- **`translations/uk/`**: the Ukrainian localization (originally contributed by
+  @edocltd in PR #50, shipped in v1.9.0) has been retired. The translation drifted
+  across v1.9.0 to v1.9.7 with no maintenance signal, and a partially translated set
+  is worse than no translation at all when readers cannot tell what is current.
+  @edocltd's contribution remains credited in `CONTRIBUTORS.md`. If a maintained
+  translation is desired in the future, it should land via a contributor who can
+  commit to keeping it in sync release over release.
+
+## [1.9.6] - 2026-04-26
+
+### Security
+- **VULN-A01 (HIGH):** Removed `Bash` from `seo-flow` agent tool grant, agent no
+  longer has shell access, eliminating prompt-injection-to-shell attack surface
+- **VULN-A02/A07 (MEDIUM/LOW):** Switched `sync_flow.py` to anonymous-first GitHub API
+  requests; PAT only used as 403-triggered fallback, eliminates token-on-redirect leak
+- **VULN-A03 (MEDIUM):** Added `Path.resolve()` containment check in `record_write()`,
+  blocks path-traversal writes outside the skill reference directory
+- **VULN-A04 (MEDIUM):** Introduced `flow-prompts.lock` SHA-256 baseline file; sync now
+  diffs against baseline and reports upstream drift before writing
+- **VULN-A05 (MEDIUM):** Added explicit "WebFetch is untrusted" security rule to agent
+  body, agent warned not to execute or relay fetched content verbatim
+- **VULN-A06 (LOW):** `gh` CLI absence now degrades to anonymous API rather than
+  hard-exiting, sync works without gh CLI on public repos
+- **VULN-A08 (LOW):** All file writes are now atomic (tempfile + shutil.move),
+  eliminates partial-write corruption on interrupt
+- **VULN-A09 (LOW):** GitHub API responses capped at 5 MB with 15s timeout,
+  prevents memory exhaustion from malformed or oversized API payloads
+- **VULN-A10 (LOW):** URL allowlist validates every request targets `api.github.com`
+  over HTTPS, blocks SSRF if `API_ROOT` constant is modified
+- **INFO-A14:** Added CC BY 4.0 attribution header to `references/prompts/README.md`
+
+### Tests
+- Added 10 new unit/integration tests covering all above findings
+- Test count: 5 → 15
+
+## [1.9.5] - 2026-04-26
+
+### Added
+- **seo-flow**: FLOW framework integration, Find → Leverage → Optimize → Win. 41 evidence-led AI prompts (CC BY 4.0) bundled as `skills/seo-flow/references/prompts/` (find:5, leverage:1, optimize:21, win:3, local:11). Commands: `/seo flow [find|leverage|optimize|win|local|prompts|sync]`.
+- **Context-matching orchestration**: `/seo flow optimize` selects 2-3 most relevant prompts from 21 based on URL industry signals and prior skill output, not a full dump.
+- **`scripts/sync_flow.py`**: GitHub API sync script, pulls latest FLOW prompts, framework doc, and bibliography from AgriciDaniel/flow. Supports `--dry-run` and `--ref <sha>` pinning. Outputs JSON summary.
+- **`agents/seo-flow.md`**: FLOW subagent, applies stage prompts to target URLs, returns structured evidence-tagged findings.
+- **FLOW cross-references**: Integration notes added to seo-geo, seo-local, seo-content, and seo-cluster skills.
+
+### License
+- FLOW content bundled under CC BY 4.0. Attribution header on every prompt file (automated by `sync_flow.py`). Claude SEO's MIT license unchanged, applies to skill code only.
+
+## [1.9.0] - 2026-04-14
+
+### Added
+- **seo-cluster**: SERP-based semantic topic clustering for content architecture (skill + 3 references + interactive cluster-map.html visualization + agent). Contributed by Lutfiya Miller (Pro Hub Challenge Winner).
+- **seo-sxo**: Search Experience Optimization, reads SERPs backwards to detect page-type mismatches, derives user stories, scores pages from persona perspectives (skill + 4 references + agent). Contributed by Florian Schmitz.
+- **seo-drift**: SEO drift monitoring, baseline, diff, and track changes to on-page SEO with 17 comparison rules across 3 severity levels. SQLite persistence (skill + 1 reference + agent + 4 Python scripts). Contributed by Dan Colta. Security-hardened: all curl usage eliminated, SSRF protection enforced.
+- **seo-ecommerce**: E-commerce SEO, Google Shopping intelligence, Amazon marketplace analysis, product schema validation (skill + 1 reference + agent + 2 Python scripts). Contributed by Matej Marjanovic.
+- **DataForSEO cost guardrails**: `scripts/dataforseo_costs.py` with threshold-based approval, session budget tracking, daily spend summaries. `references/cost-tiers.md` pricing table. Contributed by Matej Marjanovic.
+- **seo-hreflang cultural profiles**: 4 cultural adaptation profiles (DACH, Francophone, Hispanic, Japanese) with locale format tables, content parity audit, and freshness tracking. 3 new reference files. Contributed by Chris Muller.
+- **CONTRIBUTORS.md**: Community credits file for Pro Hub Challenge and PR contributors
+- **AGENTS.md**: Multi-platform discovery file for Cursor/Antigravity (concept by Matej Marjanovic, rewritten for v1.9.0)
+- **Schema templates**: Product (Full E-commerce) and ItemList (hub/pillar pages) added to `schema/templates.json`
+- 5 new commands: `/seo cluster`, `/seo sxo`, `/seo drift baseline|compare|history`, `/seo ecommerce`
+
+### Changed
+- Orchestrator spawns up to 15 subagents (was 12): +seo-cluster, +seo-sxo, +seo-drift, +seo-ecommerce
+- seo-hreflang SKILL.md enhanced with Cultural Adaptation Assessment, Content Parity Audit, and Locale Format Validation sections
+- seo-dataforseo SKILL.md enhanced with Cost Guardrails section requiring cost checks before API calls
+- All 23 SKILL.md files stamped to v1.9.0
+- Install scripts (install.sh, install.ps1) pinned to v1.9.0
+- plugin.json updated with 9 new keywords
+
+### Community
+- Pro Hub Challenge: Lutfiya Miller (Winner - Semantic Cluster Engine), Florian Schmitz (SXO Skill), Dan Colta (SEO Drift Monitor), Chris Muller (Multi-lingual SEO), Matej Marjanovic (E-commerce + Cost Config + Platform Support), Benjamin Samar (SEO Dungeon - reviewed)
+- 5 out of 6 submissions scored Proficient or above
+- See CONTRIBUTORS.md for full credits and original repo links
+
 ## [1.8.2] - 2026-04-10
 
 ### Added
-- **Ukrainian localization**: first i18n — README, CONTRIBUTING, PRIVACY, SECURITY, INSTALLATION, TROUBLESHOOTING translated (PR #50)
+- **Ukrainian localization**: first i18n, README, CONTRIBUTING, PRIVACY, SECURITY, INSTALLATION, TROUBLESHOOTING translated (PR #50)
 - **Firecrawl extension section** in README with install and example commands
 - **Backlink API privacy disclosures** in PRIVACY.md (Moz, Bing Webmaster, Common Crawl, verify crawler)
 - 4 missing commands added to README table: `/seo backlinks`, `/seo firecrawl`, `/seo dataforseo`, `/seo image-gen`
@@ -16,20 +365,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 6 missing skill directories added to INSTALLATION.md manual uninstall list
 
 ### Fixed
-- **Install scripts pinned to stale version**: REPO_TAG bumped from v1.7.2 to v1.8.2 in install.sh and install.ps1 — new curl-based installs now get the current release
+- **Install scripts pinned to stale version**: REPO_TAG bumped from v1.7.2 to v1.8.2 in install.sh and install.ps1, new curl-based installs now get the current release
 - **Supply chain risk in docs**: removed deprecated `irm | iex` pattern from docs/INSTALLATION.md, replaced with safe `git clone` + `powershell -File` method
 - **Version sync**: pyproject.toml (1.7.2→1.8.2), CITATION.cff (1.7.2→1.8.2, date 2026-04-10), all 19 SKILL.md files
 - **Python requirement**: pyproject.toml corrected from `>=3.11` to `>=3.10` (matches README and install scripts)
 - **README architecture counts**: sub-skills "15+2" → "16+3", agents "10+2" → "11+2"
 - **Orchestrator SKILL.md**: stale count "15+2" → "16+3" at line 119
 - **CLAUDE.md**: sub-skill count 17→16 core, script count "20+2" → "21+2"
-- **Extension install hang**: merged PR #43 — npx pre-warm no longer starts MCP server binary
+- **Extension install hang**: merged PR #43, npx pre-warm no longer starts MCP server binary
 
 ### Community
 - Merged PR #43 (fix stuck extension install) by @olivierroy
 - Merged PR #45 (correct sub-skills count) by @MalteBerlin
 - Merged PR #50 (Ukrainian localization) by @edocltd
-- Closed issue #42 (marketplace discovery — resolved)
+- Closed issue #42 (marketplace discovery, resolved)
 - Reviewed PRs #47, #46, #30, #36 with detailed feedback
 
 ## [1.8.1] - 2026-04-06

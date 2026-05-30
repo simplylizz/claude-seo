@@ -56,3 +56,7 @@ Provide a structured report with:
 Scripts use PEP 723 inline metadata. Run them with `uv run` -- dependencies are resolved automatically.
 
 **Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools (e.g., `npx lighthouse URL --output json`).
+
+## Fetching pages (v2.0.0)
+
+Use `uv run scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.

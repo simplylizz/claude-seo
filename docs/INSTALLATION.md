@@ -8,19 +8,39 @@
 
 ## Quick Install
 
-### Unix/macOS/Linux
+### Plugin Install (Claude Code 1.0.33+)
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh | bash
+The recommended path. Inside Claude Code:
+
+```
+/plugin marketplace add AgriciDaniel/claude-seo
+/plugin install claude-seo@agricidaniel-seo
 ```
 
-### Windows (PowerShell)
+### Manual Install (Unix, macOS, Linux)
+
+```bash
+git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
+bash claude-seo/install.sh
+```
+
+Review-then-run alternative:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh > install.sh
+cat install.sh        # review
+bash install.sh       # run when satisfied
+rm install.sh
+```
+
+### Manual Install (Windows, PowerShell)
 
 ```powershell
 git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
-cd claude-seo
-powershell -ExecutionPolicy Bypass -File install.ps1
+powershell -ExecutionPolicy Bypass -File claude-seo\install.ps1
 ```
+
+The Windows path uses `git clone` rather than `irm | iex` because Claude Code's own security guardrails flag piped remote-script execution. Inspect `install.ps1` before running.
 
 ## Manual Installation
 
@@ -77,34 +97,21 @@ You should see a help message or prompt for a URL.
 
 ## Uninstallation
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/uninstall.sh | bash
+If installed as a plugin:
+
+```
+/plugin uninstall claude-seo@agricidaniel-seo
+/plugin marketplace remove AgriciDaniel/claude-seo
 ```
 
-Or manually:
+If installed manually, run the uninstaller from a fresh clone:
 
 ```bash
-rm -rf ~/.claude/skills/seo
-rm -rf ~/.claude/skills/seo-audit
-rm -rf ~/.claude/skills/seo-backlinks
-rm -rf ~/.claude/skills/seo-competitor-pages
-rm -rf ~/.claude/skills/seo-content
-rm -rf ~/.claude/skills/seo-dataforseo
-rm -rf ~/.claude/skills/seo-geo
-rm -rf ~/.claude/skills/seo-google
-rm -rf ~/.claude/skills/seo-hreflang
-rm -rf ~/.claude/skills/seo-image-gen
-rm -rf ~/.claude/skills/seo-images
-rm -rf ~/.claude/skills/seo-local
-rm -rf ~/.claude/skills/seo-maps
-rm -rf ~/.claude/skills/seo-page
-rm -rf ~/.claude/skills/seo-plan
-rm -rf ~/.claude/skills/seo-programmatic
-rm -rf ~/.claude/skills/seo-schema
-rm -rf ~/.claude/skills/seo-sitemap
-rm -rf ~/.claude/skills/seo-technical
-rm -f ~/.claude/agents/seo-*.md
+git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
+bash claude-seo/uninstall.sh
 ```
+
+`uninstall.sh` removes all installed sub-skills, sub-agents, and the plugin's MCP entries from `~/.claude/settings.json`. Do not maintain a hand-coded `rm` list. The shipped uninstaller is the canonical source.
 
 ## Upgrading
 

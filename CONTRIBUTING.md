@@ -25,11 +25,32 @@ Use [GitHub Discussions](https://github.com/AgriciDaniel/claude-seo/discussions)
 
 ### Development Setup
 
+#### Option A: Local install
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/claude-seo.git
 cd claude-seo
 bash install.sh
 ```
+
+#### Option B: GitHub Codespaces / VS Code Dev Containers
+
+A `.devcontainer/devcontainer.json` is included so you can develop without any
+local setup. Two paths:
+
+- **GitHub Codespaces**: click **Code -> Codespaces -> Create codespace on
+  main** on the repo's GitHub page. You get a fully provisioned Python 3.12
+  environment with [uv](https://docs.astral.sh/uv/) and Playwright + Chromium
+  ready, in about 60 seconds.
+- **VS Code Remote Containers**: with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+  installed, clone the repo locally then run **Dev Containers: Reopen in
+  Container** from the command palette.
+
+Both paths use the same image (`mcr.microsoft.com/devcontainers/python:3.12`)
+and post-create command (installs `uv`, then `uv run --with playwright python
+-m playwright install chromium`). Scripts auto-install their dependencies on
+first `uv run` via PEP 723 inline metadata; the test suite runs with
+`uv run --group dev pytest tests/`. No additional setup needed for either.
 
 ### Guidelines
 
@@ -45,3 +66,17 @@ bash install.sh
 - Python: Follow PEP 8 conventions. Use `ruff check` or `flake8` for linting before submitting
 - Shell: Use `set -euo pipefail` and quote all variables
 - Markdown: Keep lines under 120 characters where practical
+
+## Community Extensions (Pro Hub Challenge)
+
+Claude SEO accepts community-built extensions through challenges and PRs.
+v1.9.0 integrated 5 challenge submissions and v1.9.7 added 9 community pull
+requests from 7 contributors. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the
+full credits.
+
+To submit a community extension:
+1. Build your skill/agent/script following the patterns in this repo
+2. Keep SKILL.md under 500 lines, references under 200 lines
+3. All scripts must import `validate_url()` from `google_auth.py` for SSRF protection
+4. Include `original_author` in your SKILL.md frontmatter metadata
+5. Submit a PR or post in the [AI Marketing Hub](https://www.skool.com/ai-marketing-hub)
