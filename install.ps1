@@ -69,7 +69,7 @@ try {
 # Set paths
 $SkillDir = "$env:USERPROFILE\.claude\skills\seo"
 $AgentDir = "$env:USERPROFILE\.claude\agents"
-$RepoUrl = "https://github.com/AgriciDaniel/claude-seo"
+$RepoUrl = "https://github.com/simplylizz/claude-seo"
 # Pin to a specific release tag to prevent silent updates from main.
 # This default MUST be bumped on every release. CI guard
 # (tests/test_manifest_consistency.py) enforces this matches plugin.json.
@@ -230,4 +230,4 @@ Write-Host "Usage:" -ForegroundColor Cyan
 Write-Host "  1. Start Claude Code:  claude"
 Write-Host "  2. Run commands:       /seo audit https://example.com"
 Write-Host ""
-Write-Host "To uninstall: irm https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/uninstall.ps1 | iex" -ForegroundColor Gray
+Write-Host "To uninstall: irm https://raw.githubusercontent.com/simplylizz/claude-seo/main/uninstall.ps1 | iex" -ForegroundColor Gray

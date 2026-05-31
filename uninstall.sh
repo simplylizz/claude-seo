@@ -9,8 +9,8 @@
 # uninstaller.
 #
 # Plugin-install users should use Claude Code's own command instead:
-#   /plugin uninstall claude-seo@agricidaniel-seo
-#   /plugin marketplace remove AgriciDaniel/claude-seo
+#   /plugin uninstall claude-seo@simplylizz-claude-seo
+#   /plugin marketplace remove simplylizz/claude-seo
 set -euo pipefail
 
 SKILL_DIR="${HOME}/.claude/skills"
