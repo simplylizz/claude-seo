@@ -57,7 +57,3 @@ Attribution header on every bundled prompt file (automated by `scripts/sync_flow
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on submitting pull requests,
 creating extensions, and participating in future challenges.
-
-Join the community:
-- Free: https://www.skool.com/ai-marketing-hub
-- Pro: https://www.skool.com/ai-marketing-hub-pro

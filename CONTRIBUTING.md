@@ -79,4 +79,4 @@ To submit a community extension:
 2. Keep SKILL.md under 500 lines, references under 200 lines
 3. All scripts must import `validate_url()` from `google_auth.py` for SSRF protection
 4. Include `original_author` in your SKILL.md frontmatter metadata
-5. Submit a PR or post in the [AI Marketing Hub](https://www.skool.com/ai-marketing-hub)
+5. Submit a PR
