@@ -10,14 +10,17 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 function Resolve-Python {
-    $pythonCmd = Get-Command -Name python -ErrorAction SilentlyContinue
-    if ($null -ne $pythonCmd) {
-        return @{ Exe = 'python'; Args = @() }
-    }
+    $candidates = @(
+        @{ Exe = 'py'; Args = @('-3') },
+        @{ Exe = 'python3'; Args = @() },
+        @{ Exe = 'python'; Args = @() }
+    )
 
-    $pyCmd = Get-Command -Name py -ErrorAction SilentlyContinue
-    if ($null -ne $pyCmd) {
-        return @{ Exe = 'py'; Args = @('-3') }
+    foreach ($candidate in $candidates) {
+        $resolved = Test-PythonCandidate -Exe $candidate.Exe -Args $candidate.Args
+        if ($null -ne $resolved) {
+            return $resolved
+        }
     }
 
     return $null
@@ -58,10 +61,36 @@ function Invoke-External {
     return @{ ExitCode = $exitCode; Output = $output }
 }
 
+function Test-PythonCandidate {
+    param(
+        [Parameter(Mandatory = $true)][string]$Exe,
+        [Parameter(Mandatory = $true)][string[]]$Args
+    )
+
+    $pythonCmd = Get-Command -Name $Exe -ErrorAction SilentlyContinue
+    if ($null -eq $pythonCmd) {
+        return $null
+    }
+
+    $probeCode = 'import sys; print(sys.executable); print(sys.version.split()[0])'
+    $probe = Invoke-External -Exe $Exe -Args @($Args + @('-c', $probeCode)) -Quiet
+    $probeText = ($probe.Output -join "`n")
+
+    if ($probe.ExitCode -ne 0) {
+        return $null
+    }
+
+    if ($probeText -match 'Microsoft Store|WindowsApps|App execution alias|was not found') {
+        return $null
+    }
+
+    return @{ Exe = $Exe; Args = $Args }
+}
+
 # Check prerequisites
 $python = Resolve-Python
 if ($null -eq $python) {
-    Write-Host "[x] Python is required but was not found (tried 'python' and 'py')." -ForegroundColor Red
+    Write-Host "[x] Python is required but was not found (tried 'py -3', 'python3', and 'python')." -ForegroundColor Red
     exit 1
 }
 

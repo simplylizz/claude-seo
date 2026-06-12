@@ -13,8 +13,12 @@ Hook configuration in ~/.claude/settings.json:
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/skills/seo/hooks/validate-schema.py \"$FILE_PATH\"",
-            "exitCodes": { "2": "block" }
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/run-python-hook.js",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/validate-schema.py",
+              "${tool_input.file_path}"
+            ]
           }
         ]
       }
@@ -125,7 +129,7 @@ def main():
 
     # Only validate HTML-like files
     valid_extensions = (".html", ".htm", ".jsx", ".tsx", ".vue", ".svelte", ".php", ".ejs")
-    if not filepath.endswith(valid_extensions):
+    if not filepath.lower().endswith(valid_extensions):
         sys.exit(0)
 
     # File-size guard: skip files >10MB to bound memory + hook latency.
