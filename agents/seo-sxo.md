@@ -19,7 +19,7 @@ then comparing that against the target page.
 
 ### 1. Fetch and Parse Target Page
 
-- Fetch the target URL using `python scripts/fetch_page.py "<url>"` (SSRF protection)
+- Fetch the target URL using `python scripts/render_page.py "<url>" --mode auto --json` (SPA-aware SSRF-protected renderer)
 - Parse with `python scripts/parse_html.py "<url>"` to extract SEO elements
 - Identify: page type, title, H1, meta description, headings, word count, schema, CTAs, media
 - If no keyword was provided, derive primary keyword from title + H1 overlap
@@ -85,7 +85,7 @@ Score the target page across 7 dimensions (100 points total):
 ## Pre-Delivery Checklist
 
 Before presenting results, verify:
-- [ ] URL was fetched via scripts/fetch_page.py (not raw curl)
+- [ ] URL was fetched via scripts/render_page.py --mode auto (not raw curl)
 - [ ] At least 5 SERP results were analyzed
 - [ ] Page type classification uses the taxonomy reference
 - [ ] User stories cite specific SERP signals

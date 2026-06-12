@@ -42,7 +42,7 @@ Fetch and parse any product page for on-page SEO quality.
 ### Workflow
 
 ```
-1. python scripts/fetch_page.py <url>         → raw HTML
+1. python scripts/render_page.py <url> --mode auto → raw/rendered HTML
 2. python scripts/parse_html.py --url <url>   → SEO elements
 3. Analyze product-specific signals (below)
 ```

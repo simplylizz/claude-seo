@@ -18,7 +18,7 @@ When delegated tasks during an SEO audit or analysis:
 
 1. Detect e-commerce signals: product schema, price elements, add-to-cart buttons,
    shopping cart, product grids, Shopify/WooCommerce/Magento markers
-2. Analyze product pages using `scripts/fetch_page.py` and `scripts/parse_html.py`
+2. Analyze product pages using `scripts/render_page.py --mode auto` and `scripts/parse_html.py`
 3. Validate Product schema against Google's required and recommended fields
 4. If DataForSEO credentials available, fetch marketplace data via
    `scripts/dataforseo_merchant.py`

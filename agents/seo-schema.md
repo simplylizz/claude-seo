@@ -68,6 +68,13 @@ Provide:
 
 ## Fetching pages (v2.0.0)
 
-Use `python scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+Use `python scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes summary fields including `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate); use `--output` or import `render_page.render_page()` when full raw/rendered HTML is required. SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+
+## Persistence Contract
+
+If `output_dir` is provided by the audit orchestrator, write:
+
+- `output_dir/findings/schema.md`: detected schema, validation errors, missing opportunities, and generated recommendations
+- Structured JSON-compatible findings for `audit-data.json` under the Schema / Structured Data category
 
 For schema audits on SPA sites prefer `--mode always`: many sites inject JSON-LD client-side via React Helmet, Next/Head, or vue-meta, so the raw HTML will be empty of structured data even when the rendered DOM has the full graph. Compare `raw_content` vs `content` to confirm whether schema is server-rendered.

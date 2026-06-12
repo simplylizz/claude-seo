@@ -14,7 +14,7 @@ metadata:
 
 ## Process
 
-1. **Fetch homepage**: use `scripts/fetch_page.py` to retrieve HTML
+1. **Render homepage**: use `python scripts/render_page.py <url> --mode auto --json` to capture raw HTML, rendered HTML, extracted text, SPA status, and accessibility data when needed
 2. **Detect business type**: analyze homepage signals per seo orchestrator
 3. **Crawl site**: follow internal links up to 500 pages, respect robots.txt
 4. **Delegate to subagents** (if available, otherwise run inline sequentially):
@@ -34,7 +34,8 @@ metadata:
    - `seo-drift` -- Drift analysis: compare against stored baseline (spawn when drift baseline exists for the URL via `python scripts/drift_history.py <url>`)
    - `seo-ecommerce` -- Product schema, marketplace intelligence (spawn when E-commerce industry detected)
 5. **Score** -- aggregate into SEO Health Score (0-100)
-6. **Report** -- generate prioritized action plan
+6. **Persist audit artifacts** -- write all outputs under `{domain}-audit/`
+7. **Report** -- generate prioritized action plan and optional PDF/HTML report
 
 ## Crawl Configuration
 
@@ -49,10 +50,54 @@ Delay between requests: 1 second
 
 ## Output Files
 
-- `FULL-AUDIT-REPORT.md`: Comprehensive findings
-- `ACTION-PLAN.md`: Prioritized recommendations (Critical > High > Medium > Low)
-- `screenshots/`: Desktop + mobile captures (if Playwright available)
+- `{domain}-audit/FULL-AUDIT-REPORT.md`: Comprehensive findings
+- `{domain}-audit/ACTION-PLAN.md`: Prioritized recommendations (Critical > High > Medium > Low)
+- `{domain}-audit/audit-data.json`: Structured audit envelope for report generation
+- `{domain}-audit/findings/*.md`: Per-category specialist findings (`technical.md`, `content.md`, `schema.md`, `performance.md`, `visual.md`, etc.)
+- `{domain}-audit/screenshots/`: Desktop + mobile captures (if Playwright available)
 - **PDF Report** (recommended): Generate a professional A4 PDF using `scripts/google_report.py --type full`. This produces a white-cover enterprise report with TOC, executive summary, charts (Lighthouse gauges, query bars, index donut), metric cards, threshold tables, prioritized recommendations with effort estimates, and implementation roadmap. Always offer PDF generation after completing an audit.
+
+## Structured Audit Data Envelope
+
+Write `{domain}-audit/audit-data.json` with this shape so `python scripts/google_report.py --type full --data {domain}-audit/audit-data.json --domain <domain>` can generate a report even when Google API data is unavailable:
+
+```json
+{
+  "summary": {
+    "health_score": 0,
+    "business_type": "detected type",
+    "top_findings": [],
+    "quick_wins": []
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 0,
+      "what_works": [],
+      "findings": [
+        {
+          "title": "Finding title",
+          "severity": "Critical|High|Medium|Low|Info",
+          "description": "Evidence-backed detail",
+          "recommendation": "Specific fix"
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {"name": "Phase 1: Critical Fixes", "timeframe": "Week 1", "items": []},
+      {"name": "Phase 2: High-Impact Improvements", "timeframe": "Weeks 2-3", "items": []},
+      {"name": "Phase 3: Content & Authority", "timeframe": "Month 2", "items": []},
+      {"name": "Phase 4: Monitoring & Iteration", "timeframe": "Ongoing", "items": []}
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}
+```
 
 ## Scoring Weights
 
