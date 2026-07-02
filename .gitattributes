@@ -1,0 +1,14 @@
+# Fork-owned files: always keep our version on merge with upstream.
+# We deliberately diverge from AgriciDaniel/claude-seo on branding, packaging
+# (uv/PEP 723 instead of pip/venv), and promo removal. `merge=ours` prevents
+# upstream's version of these files from ever producing conflicts.
+# (Requires: git config merge.ours.driver true)
+.claude-plugin/marketplace.json merge=ours
+.claude-plugin/plugin.json      merge=ours
+README.md                       merge=ours
+install.sh                      merge=ours
+install.ps1                     merge=ours
+uninstall.sh                    merge=ours
+uninstall.ps1                   merge=ours
+CONTRIBUTORS.md                 merge=ours
+translations/**                 merge=ours
