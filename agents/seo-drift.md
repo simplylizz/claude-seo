@@ -57,3 +57,9 @@ For comparisons, present:
 2. Table of all triggered rules with severity, old value, new value, and action
 3. Cross-skill recommendations for any CRITICAL or WARNING findings
 4. Offer HTML report generation for sharing with stakeholders
+
+## Audit Persistence
+
+If `output_dir` is provided by the audit orchestrator, write:
+- `output_dir/findings/drift.md`: baseline availability, triggered rules, old/new values, and regression findings
+- Structured JSON-compatible findings for `audit-data.json` under the SEO Drift category

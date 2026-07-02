@@ -61,6 +61,13 @@ uv run scripts/google_report.py --type full --data data.json --domain DOMAIN --f
 Report types: `cwv-audit`, `gsc-performance`, `indexation`, `full`.
 Before presenting: verify `"review": {"status": "PASS"}` in the JSON output.
 
+## Audit Persistence
+
+If `output_dir` is provided by the audit orchestrator, write:
+- `output_dir/findings/google.md`: PSI, CrUX, GSC, URL Inspection, GA4, and credential-tier findings
+- Structured JSON-compatible findings for `audit-data.json` under the Google SEO Data category
+- Generated PDF/HTML/XLSX reports under `output_dir/` by passing `--output-dir "$output_dir"` to `scripts/google_report.py`
+
 ## Error Handling
 
 - If credentials are missing, report which tier is available and what can still be checked
