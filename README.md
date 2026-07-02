@@ -438,7 +438,7 @@ Most SEO tools treat AI search as a separate optimization discipline. Claude SEO
 
 ## Community Contributors
 
-v1.9.0 includes contributions from the [AI Marketing Hub](https://www.skool.com/ai-marketing-hub) Pro Hub Challenge:
+v1.9.0 includes contributions from the Pro Hub Challenge:
 
 | Contributor | Contribution |
 |------------|-------------|
