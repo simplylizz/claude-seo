@@ -32,7 +32,7 @@ Copy-Item -Path (Join-Path $SourceDir "skills/seo-ahrefs/SKILL.md") `
 Write-Host "✓ Installed skill: $SkillTarget"
 
 # Pre-warm.
-& npx --yes --package=@ahrefs/mcp ahrefs-mcp --help *> $null
+& npx --yes --package=@ahrefs/mcp@0.0.11 mcp --help *> $null
 
 # Merge settings.json.
 $pyScript = @"
@@ -46,7 +46,7 @@ if os.path.exists(path):
         data = {}
 data.setdefault('mcpServers', {})['ahrefs'] = {
     'command': 'npx',
-    'args': ['--yes', '--package=@ahrefs/mcp', 'ahrefs-mcp'],
+    'args': ['--yes', '--package=@ahrefs/mcp@0.0.11', 'mcp'],
     'env': {'AHREFS_API_TOKEN': token},
 }
 fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path) or '.', prefix='.settings.', suffix='.json')

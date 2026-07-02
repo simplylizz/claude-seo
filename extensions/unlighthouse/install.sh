@@ -19,8 +19,8 @@ main() {
 
     SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" >/dev/null 2>&1 && pwd)"
 
-    echo "→ Pre-warming unlighthouse-cli..."
-    npx --yes --package=unlighthouse-cli@^0.13 unlighthouse-ci --help >/dev/null 2>&1 || true
+    echo "→ Pre-warming unlighthouse..."
+    npx --yes --package=unlighthouse@0.13.5 unlighthouse-ci --help >/dev/null 2>&1 || true
 
     mkdir -p "${SKILL_DIR}/seo-unlighthouse"
     cp "${SOURCE_DIR}/skills/seo-unlighthouse/SKILL.md" "${SKILL_DIR}/seo-unlighthouse/SKILL.md"

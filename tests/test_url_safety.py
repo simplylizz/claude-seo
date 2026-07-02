@@ -15,6 +15,8 @@ import os
 import socket
 import sys
 import threading
+from contextlib import contextmanager
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -93,6 +95,26 @@ def test_normalize_hostname_passes_through_dns_names() -> None:
 def test_validate_url_blocks_obfuscated_bypasses(url: str) -> None:
     """Each of these would have bypassed v1.x parse-mode validation."""
     assert url_safety.validate_url(url) is False
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1:6666\\@1.1.1.1/",
+        "https://169.254.169.254\\@example.com/latest/meta-data/",
+        "https://user:pass@example.com/",
+        "https://127.0.0.1#@example.com/",
+        "https://example.com%5c@1.1.1.1/",
+        "https://metadata.google.internal%2e/",
+        "http://127.0.0.1%2e/",
+    ],
+)
+def test_validate_url_blocks_authority_confusion(url: str) -> None:
+    """Reject URL forms where urllib and the eventual HTTP stack can
+    disagree about the connection target."""
+    assert url_safety.validate_url(url) is False
+    with pytest.raises(url_safety.URLSafetyError):
+        url_safety.validate_url_strict(url)
 
 
 # ---------------------------------------------------------------------------
@@ -284,6 +306,44 @@ def test_pin_dns_restores_getaddrinfo_on_normal_exit() -> None:
     with url_safety._pin_dns("pinned.example", "8.8.8.8", 443):
         assert socket.getaddrinfo is not before
     assert socket.getaddrinfo is before
+
+
+def test_safe_requests_head_uses_strict_validation_and_dns_pin() -> None:
+    captured: dict = {}
+    response = SimpleNamespace(status_code=200)
+
+    @contextmanager
+    def fake_pin(hostname: str, pinned_ip: str, port: int):
+        captured["pin"] = (hostname, pinned_ip, port)
+        yield
+
+    with patch.object(
+        url_safety,
+        "validate_url_strict",
+        return_value=("https://safe.example/path", "1.1.1.1"),
+    ) as validate, patch.object(
+        url_safety,
+        "_pin_dns",
+        side_effect=fake_pin,
+    ), patch.object(
+        url_safety.requests,
+        "head",
+        return_value=response,
+    ) as request_head:
+        result = url_safety.safe_requests_head(
+            "https://safe.example/path",
+            timeout=7,
+            allow_redirects=True,
+        )
+
+    validate.assert_called_once_with("https://safe.example/path")
+    request_head.assert_called_once_with(
+        "https://safe.example/path",
+        timeout=7,
+        allow_redirects=True,
+    )
+    assert captured["pin"] == ("safe.example", "1.1.1.1", 443)
+    assert result is response
 
 
 def test_pin_dns_restores_getaddrinfo_on_exception() -> None:

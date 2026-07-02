@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "requests>=2.32.4,<3.0.0",
-#     "urllib3>=2.6.3,<3.0.0",
-# ]
-# ///
 """
 Fetch a web page with proper headers and error handling.
 
@@ -14,23 +7,24 @@ DNS-rebinding protection, and a --render flag delegates to render_page for
 SPA-aware fetching.
 
 Usage:
-    uv run fetch_page.py https://example.com
-    uv run fetch_page.py https://example.com --output page.html
-    uv run fetch_page.py https://example.com --render auto    # SPA-aware
-    uv run fetch_page.py https://example.com --render always  # force render
+    python fetch_page.py https://example.com
+    python fetch_page.py https://example.com --output page.html
+    python fetch_page.py https://example.com --render auto    # SPA-aware
+    python fetch_page.py https://example.com --render always  # force render
 """
 
 from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from typing import Optional
 
 try:
     import requests
 except ImportError:
-    print("Error: requests library required. Run with: uv run fetch_page.py (deps auto-install)")
+    print("Error: requests library required. Install with: pip install requests")
     sys.exit(1)
 
 _SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,6 +54,54 @@ DEFAULT_HEADERS = {
     "Accept-Encoding": "gzip, deflate",
     "Connection": "keep-alive",
 }
+
+_CONTENT_TYPE_CHARSET_RE = re.compile(r"charset\s*=\s*['\"]?([^;,'\"\s>]+)", re.IGNORECASE)
+_META_CHARSET_RE = re.compile(
+    r"<meta[^>]+charset\s*=\s*['\"]?([^;,'\"\s/>]+)",
+    re.IGNORECASE,
+)
+_BOMS = (
+    (b"\xef\xbb\xbf", "utf-8-sig"),
+    (b"\xff\xfe", "utf-16-le"),
+    (b"\xfe\xff", "utf-16-be"),
+)
+
+
+def _decode_bytes(raw: bytes, encoding: str) -> str:
+    try:
+        return raw.decode(encoding, errors="replace")
+    except LookupError:
+        return raw.decode("utf-8", errors="replace")
+
+
+def _extract_charset_from_content_type(content_type: str) -> str | None:
+    match = _CONTENT_TYPE_CHARSET_RE.search(content_type or "")
+    return match.group(1).strip() if match else None
+
+
+def _extract_meta_charset(raw: bytes) -> str | None:
+    head = raw[:4096].decode("ascii", errors="ignore")
+    match = _META_CHARSET_RE.search(head)
+    return match.group(1).strip() if match else None
+
+
+def _decode_response_content(response) -> str:
+    """Decode HTTP bytes deterministically for stable SEO snapshots."""
+    raw = response.content or b""
+    for marker, encoding in _BOMS:
+        if raw.startswith(marker):
+            return _decode_bytes(raw, encoding)
+
+    content_type = response.headers.get("Content-Type", "") if response.headers else ""
+    charset = _extract_charset_from_content_type(content_type)
+    if charset:
+        return _decode_bytes(raw, charset)
+
+    charset = _extract_meta_charset(raw)
+    if charset:
+        return _decode_bytes(raw, charset)
+
+    return raw.decode("utf-8", errors="replace")
 
 
 def fetch_page(
@@ -126,7 +168,7 @@ def fetch_page(
 
         result["url"] = response.url
         result["status_code"] = response.status_code
-        result["content"] = response.text
+        result["content"] = _decode_response_content(response)
         result["headers"] = dict(response.headers)
 
         if response.history:

@@ -40,7 +40,7 @@ main() {
 
     # Pre-warm the package so the first MCP invocation isn't slow.
     echo "→ Pre-warming @ahrefs/mcp..."
-    npx --yes --package=@ahrefs/mcp ahrefs-mcp --help >/dev/null 2>&1 || true
+    npx --yes --package=@ahrefs/mcp@0.0.11 mcp --help >/dev/null 2>&1 || true
 
     mkdir -p "${SKILL_DIR}/seo-ahrefs"
     cp "${SOURCE_DIR}/skills/seo-ahrefs/SKILL.md" "${SKILL_DIR}/seo-ahrefs/SKILL.md"
@@ -64,7 +64,7 @@ if os.path.exists(path):
         data = {}
 data.setdefault("mcpServers", {})["ahrefs"] = {
     "command": "npx",
-    "args": ["--yes", "--package=@ahrefs/mcp", "ahrefs-mcp"],
+    "args": ["--yes", "--package=@ahrefs/mcp@0.0.11", "mcp"],
     "env": {"AHREFS_API_TOKEN": token},
 }
 fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path) or ".",

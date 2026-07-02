@@ -53,7 +53,7 @@ PY
 
     echo
     echo "Done. Verify your IndexNow key is published:"
-    echo "  uv run scripts/indexnow_submit.py --host example.com \\"
+    echo "  python scripts/indexnow_submit.py --host example.com \\"
     echo "    --key \$INDEXNOW_KEY --key-location \$INDEXNOW_KEY_LOCATION --verify-only"
 }
 main "$@"

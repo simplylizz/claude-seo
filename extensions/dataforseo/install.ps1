@@ -52,7 +52,7 @@ if ([string]::IsNullOrEmpty($DfseUsername)) {
 }
 
 $DfsePasswordSecure = Read-Host "DataForSEO password" -AsSecureString
-$DfsePassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+$DfsePassword = [Runtime.InteropServices.Marshal]::PtrToStringBSTR(
     [Runtime.InteropServices.Marshal]::SecureStringToBSTR($DfsePasswordSecure)
 )
 if ([string]::IsNullOrEmpty($DfsePassword)) {
@@ -103,33 +103,43 @@ if ($null -eq $python) {
 
 if ($null -ne $python) {
     $pyExe = $python.Source
+    # Credentials are passed as argv (never interpolated into the source string)
+    # and the settings file is written atomically with 0600 permissions.
     $pyScript = @"
-import json, os
-settings_path = r'$SettingsFile'
-if os.path.exists(settings_path):
-    with open(settings_path, 'r') as f:
-        settings = json.load(f)
-else:
-    settings = {}
-if 'mcpServers' not in settings:
-    settings['mcpServers'] = {}
-settings['mcpServers']['dataforseo'] = {
+import json, os, sys, tempfile
+path, username, password, field_config = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+settings = {}
+if os.path.exists(path):
+    try:
+        with open(path) as f:
+            settings = json.load(f)
+    except json.JSONDecodeError:
+        settings = {}
+settings.setdefault('mcpServers', {})['dataforseo'] = {
     'command': 'npx',
-    'args': ['-y', 'dataforseo-mcp-server'],
+    'args': ['-y', 'dataforseo-mcp-server@2.8.10'],
     'env': {
-        'DATAFORSEO_USERNAME': '$DfseUsername',
-        'DATAFORSEO_PASSWORD': '$DfsePassword',
+        'DATAFORSEO_USERNAME': username,
+        'DATAFORSEO_PASSWORD': password,
         'ENABLED_MODULES': 'SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,DOMAIN_ANALYTICS,BUSINESS_DATA,CONTENT_ANALYSIS,AI_OPTIMIZATION',
-        'FIELD_CONFIG_PATH': r'$FieldConfigPath'
-    }
+        'FIELD_CONFIG_PATH': field_config,
+    },
 }
-os.makedirs(os.path.dirname(settings_path), exist_ok=True)
-with open(settings_path, 'w') as f:
-    json.dump(settings, f, indent=2)
+os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path) or '.', prefix='.settings.', suffix='.json')
+try:
+    with os.fdopen(fd, 'w') as f:
+        json.dump(settings, f, indent=2)
+    os.chmod(tmp, 0o600)
+    os.replace(tmp, path)
+except Exception:
+    if os.path.exists(tmp):
+        os.unlink(tmp)
+    raise
 print('  ok')
 "@
 
-    $result = & $pyExe -c $pyScript 2>&1
+    $result = $pyScript | & $pyExe - $SettingsFile $DfseUsername $DfsePassword $FieldConfigPath 2>&1
     if ($LASTEXITCODE -eq 0) {
         Write-Host "  ✓ MCP server configured in settings.json" -ForegroundColor Green
     } else {
@@ -144,7 +154,7 @@ print('  ok')
 # Pre-warm npx package
 Write-Host "→ Pre-downloading dataforseo-mcp-server..." -ForegroundColor Yellow
 try {
-    & npx -y dataforseo-mcp-server --help 2>&1 | Out-Null
+    & npx -y dataforseo-mcp-server@2.8.10 --help 2>&1 | Out-Null
 } catch {
     # Ignore errors from pre-warm
 }
