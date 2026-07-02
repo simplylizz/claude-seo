@@ -390,7 +390,7 @@ def test_reference_files_have_at_least_one_link():
 
     Searches the full filename (`name.md`) and the Obsidian-style wikilink
     form (`[[name]]`) across: every SKILL.md, every agent .md, every doc/*.md,
-    top-level README/CHANGELOG/CLAUDE/AGENTS/CONTRIBUTING, and every other
+    top-level README/CHANGELOG/CLAUDE/AGENTS, and every other
     reference file. Each reference is excluded from its own search.
     """
     ref_files = list((REPO_ROOT / "skills").glob("*/references/*.md"))
@@ -402,7 +402,7 @@ def test_reference_files_have_at_least_one_link():
     search_paths += list((REPO_ROOT / "agents").glob("*.md"))
     search_paths += list((REPO_ROOT / "docs").glob("*.md"))
     for doc in ("README.md", "CHANGELOG.md", "CLAUDE.md",
-                "AGENTS.md", "CONTRIBUTING.md"):
+                "AGENTS.md"):
         candidate = REPO_ROOT / doc
         if candidate.exists():
             search_paths.append(candidate)

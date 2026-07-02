@@ -16,8 +16,6 @@
 - **Parallel execution.** Full site audits spawn up to 15 specialist agents simultaneously. Site-level audits complete in minutes rather than hours.
 - **Falsifiable, not promotional.** Every recommendation carries the first-principle observation it rests on, its dependency relationships, an explicit "how would we know this failed?" check, and a leading indicator. See [Methodology](#methodology).
 
-> Using Codex instead of Claude Code? Use [Codex SEO](https://github.com/AgriciDaniel/codex-seo), the Codex-first port with TOML agents, plugin packaging, deterministic runners, and the same SEO workflow surface.
-
 ## Who this is for
 
 - **SEO agencies running 5+ client sites.** Replace quarterly deep audits with weekly automated runs. Same team capacity, 4× audit cadence, every recommendation comes with a falsifiability check the client can verify.
@@ -51,9 +49,7 @@ Run a full audit and watch parallel agents fan out across the site:
 - [Ecosystem](#ecosystem)
 - [Documentation](#documentation)
 - [FAQ](#faq)
-- [Community Contributors](#community-contributors)
 - [License](#license)
-- [Contributing](#contributing)
 
 ## Installation
 
@@ -408,7 +404,6 @@ Claude SEO is part of a family of Claude Code skills that interoperate cleanly:
 - [Migration v1 → v2](docs/MIGRATION-v1-to-v2.md): breaking changes, six phases of work
 - [MCP Integration](docs/MCP-INTEGRATION.md): extension setup for all 8 servers
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [Contributors](CONTRIBUTORS.md): community credits
 
 ## FAQ
 
@@ -436,28 +431,10 @@ Yes. MIT licensed, fully open source, no per-domain pricing, no telemetry, no AP
 
 Most SEO tools treat AI search as a separate optimization discipline. Claude SEO follows [Google's own position](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) that AEO and GEO are rebranded labels for SEO. AI Overviews and AI Mode are grounded in the same ranking systems as classic Search; the eligibility floor is normal indexation. Claude SEO scores passage citability (134-167 word self-contained answer blocks), question-based heading hierarchy, attribution density, and entity presence across Wikipedia, Reddit, YouTube, and LinkedIn. It explicitly rejects three influencer myths: llms.txt as a citation lever, content chunking for AI, and AI-specific keyword rewriting. For commerce sites, Claude SEO audits the IPTC `TrainedAlgorithmicMedia` requirement on AI-generated product images per Google Merchant Center policy.
 
-## Community Contributors
-
-v1.9.0 includes contributions from the Pro Hub Challenge:
-
-| Contributor | Contribution |
-|------------|-------------|
-| **Lutfiya Miller** (Winner) | Semantic Cluster Engine → `seo-cluster` |
-| **Florian Schmitz** | SXO Skill → `seo-sxo` |
-| **Dan Colta** | SEO Drift Monitor → `seo-drift` |
-| **Chris Muller** | Multi-lingual SEO → `seo-hreflang` enhancements |
-| **Matej Marjanovic** | E-commerce + DataForSEO Cost Config → `seo-ecommerce` + cost guardrails |
-
-See [CONTRIBUTORS.md](CONTRIBUTORS.md) for full details and original repo links.
-
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
 
-## Contributing
-
-Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
-
 ---
 
-Originally built by [@AgriciDaniel](https://github.com/AgriciDaniel). Forked and maintained by [@simplylizz](https://github.com/simplylizz).
+Originally built by [@AgriciDaniel](https://github.com/AgriciDaniel).

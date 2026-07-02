@@ -13,9 +13,9 @@
       "source": "./",
       "description": "Comprehensive SEO analysis plugin for Claude Code. 25 sub-skills (21 core + 1 orchestrator + 1 framework integration + 2 extension mirrors) and 18 sub-agents (15 core + 1 framework integration + 2 extension mirrors), plus 7 optional MCP extensions. v2 adds shared headless rendering across every fetching agent, QRG-aligned content quality gates, LCP subparts via CrUX, IndexNow submission, four Schema.org generators (Reservation / OrderAction / DiscussionForumPosting / ProfilePage), AI Share-of-Voice tracking, parasite-SEO risk scanning, and multi-platform portability.",
       "author": {
-        "name": "AgriciDaniel",
-        "email": "agricidaniel@gmail.com",
-        "url": "https://github.com/AgriciDaniel"
+        "name": "simplylizz",
+        "email": "simplylizz@gmail.com",
+        "url": "https://github.com/simplylizz"
       },
       "category": "marketing",
       "homepage": "https://claude-seo.md",

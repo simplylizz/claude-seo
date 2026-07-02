@@ -7,8 +7,8 @@ license = "MIT"
 readme = "README.md"
 
 [project.urls]
-Homepage = "https://github.com/AgriciDaniel/claude-seo"
-Repository = "https://github.com/AgriciDaniel/claude-seo"
+Homepage = "https://github.com/simplylizz/claude-seo"
+Repository = "https://github.com/simplylizz/claude-seo"
 
 # Per-script runtime dependencies live in PEP 723 inline metadata at the top
 # of each file in scripts/ — run any script with `uv run scripts/<name>.py`
