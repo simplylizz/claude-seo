@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "requests>=2.32.4,<3.0.0",
+#     "urllib3>=2.6.3,<3.0.0",
+# ]
+# ///
 """
 Fetch a web page with proper headers and error handling.
 
@@ -7,10 +14,10 @@ DNS-rebinding protection, and a --render flag delegates to render_page for
 SPA-aware fetching.
 
 Usage:
-    python fetch_page.py https://example.com
-    python fetch_page.py https://example.com --output page.html
-    python fetch_page.py https://example.com --render auto    # SPA-aware
-    python fetch_page.py https://example.com --render always  # force render
+    uv run fetch_page.py https://example.com
+    uv run fetch_page.py https://example.com --output page.html
+    uv run fetch_page.py https://example.com --render auto    # SPA-aware
+    uv run fetch_page.py https://example.com --render always  # force render
 """
 
 from __future__ import annotations
@@ -24,7 +31,7 @@ from typing import Optional
 try:
     import requests
 except ImportError:
-    print("Error: requests library required. Install with: pip install requests")
+    print("Error: requests library required. Run with: uv run fetch_page.py (deps auto-install)")
     sys.exit(1)
 
 _SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
