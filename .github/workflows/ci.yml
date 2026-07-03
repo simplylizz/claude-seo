@@ -42,6 +42,13 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Install WeasyPrint system libraries
+        # google_report.py (and its full-audit test) imports weasyprint, which
+        # needs pango/cairo native libs. Without these the test skips; with them
+        # it actually exercises PDF/HTML report generation. Pango pulls glib
+        # (libgobject), cairo, and harfbuzz transitively.
+        run: sudo apt-get update && sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0
+
       - name: Run pytest
         # Test/CI deps come from the `dev` group in pyproject.toml; uv resolves
         # them into an isolated environment. Per-script runtime deps live in
