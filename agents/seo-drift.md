@@ -17,10 +17,10 @@ elements by comparing current page state against stored baselines.
 ## Tools
 
 All page fetching goes through the project's existing scripts with SSRF protection:
-- `uv run scripts/drift_baseline.py <url>` -- capture a new baseline
-- `uv run scripts/drift_compare.py <url>` -- compare current state to baseline
-- `uv run scripts/drift_history.py <url>` -- show change history
-- `uv run scripts/drift_report.py <file> --output report.html` -- generate HTML report
+- `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/drift_baseline.py" <url>` -- capture a new baseline
+- `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/drift_compare.py" <url>` -- compare current state to baseline
+- `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/drift_history.py" <url>` -- show change history
+- `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/drift_report.py" <file> --output report.html` -- generate HTML report
 
 Never use curl, wget, or raw HTTP requests. All fetching is handled by
 `scripts/fetch_page.py` internally, which validates URLs against private/loopback

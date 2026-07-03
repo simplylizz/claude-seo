@@ -19,8 +19,8 @@ then comparing that against the target page.
 
 ### 1. Fetch and Parse Target Page
 
-- Fetch the target URL using `uv run scripts/render_page.py "<url>" --mode auto --json` (SPA-aware SSRF-protected renderer)
-- Parse with `uv run scripts/parse_html.py "<url>"` to extract SEO elements
+- Fetch the target URL using `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/render_page.py" "<url>" --mode auto --json` (SPA-aware SSRF-protected renderer)
+- Parse with `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/parse_html.py" "<url>"` to extract SEO elements
 - Identify: page type, title, H1, meta description, headings, word count, schema, CTAs, media
 - If no keyword was provided, derive primary keyword from title + H1 overlap
 
@@ -95,7 +95,7 @@ Before presenting results, verify:
 
 ## Fetching pages (v2.0.0)
 
-Use `uv run scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+Use `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/render_page.py" <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
 
 Search experience scoring needs the *rendered* DOM because users see what JS produces. Prefer `--mode always` so above-the-fold analysis matches what the persona actually encounters.
 

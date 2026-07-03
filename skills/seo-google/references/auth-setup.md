@@ -106,7 +106,7 @@ Save to `~/.config/claude-seo/google-api.json`:
 ## Step 8: Verify Setup
 
 ```bash
-uv run scripts/google_auth.py --check
+uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/google_auth.py" --check
 ```
 
 Expected output at Tier 2 (full):

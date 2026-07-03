@@ -160,6 +160,7 @@ claude-seo/
 - Follow kebab-case naming for all skill directories
 - Agents invoked via Agent tool, never via Bash
 - Scripts use PEP 723 inline metadata; run via `uv run`
+- **Script paths in SKILL.md / agent files must be CWD-independent.** Reference every runnable script as `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/<name>.py"`, never bare `uv run scripts/<name>.py`. Shared scripts live at the repo root and are installed to `~/.claude/skills/seo/scripts/` (not inside each sub-skill dir), so a bare relative path only resolves when CWD happens to be the repo root. The `${CLAUDE_PLUGIN_ROOT:-…}` form works in both plugin installs (var set) and manual/symlink installs (fallback). Purely descriptive filename mentions in prose may stay as short `scripts/<name>.py` names.
 - Test with `uv run pytest` after changes (if applicable)
 - **Never install npm packages globally** (`npm install -g`). Use `npx <package>` to run Node.js CLI tools on demand (e.g., `npx lighthouse URL --output json`).
 - **Translations (`translations/`) are not maintained in this fork.** They come from upstream and may contain outdated instructions (e.g., bare `python3`/`pip` instead of `uv run`). Do not update or fix them — they will be overwritten on the next upstream merge anyway.

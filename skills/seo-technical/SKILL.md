@@ -146,7 +146,7 @@ layout stability across templates, `cursor: pointer` correctness — live in
 
 ```bash
 # Render with Playwright + capture accessibility tree, then score
-uv run scripts/agent_ux_check.py https://example.com --json
+uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/agent_ux_check.py" https://example.com --json
 ```
 
 The scanner outputs an Agent-UX score (0-100) plus itemized issues:
@@ -157,7 +157,7 @@ The scanner outputs an Agent-UX score (0-100) plus itemized issues:
 
 The accessibility-tree snapshot uses Playwright's
 `page.accessibility.snapshot(interesting_only=False)`. To capture the tree
-without scoring, use `uv run scripts/render_page.py <url> --a11y-tree --json`.
+without scoring, use `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/render_page.py" <url> --a11y-tree --json`.
 
 Surface findings as **opportunities**, not failures. The standards (WebMCP,
 agent UX heuristics) are early — don't gate audits on a sub-100 score.
@@ -190,7 +190,7 @@ If DataForSEO MCP tools are available, use `on_page_instant_pages` for real page
 
 ## Google API Integration (Optional)
 
-If Google API credentials are configured, use `uv run scripts/pagespeed_check.py <url> --json` for real PSI + CrUX field data (replaces lab-only CWV estimates), `uv run scripts/crux_history.py <url> --json` for 25-week CWV trends, and `uv run scripts/gsc_inspect.py <url> --json` for real indexation status per URL.
+If Google API credentials are configured, use `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/pagespeed_check.py" <url> --json` for real PSI + CrUX field data (replaces lab-only CWV estimates), `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/crux_history.py" <url> --json` for 25-week CWV trends, and `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/gsc_inspect.py" <url> --json` for real indexation status per URL.
 
 ## Error Handling
 

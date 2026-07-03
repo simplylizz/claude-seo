@@ -58,14 +58,14 @@ extension is also installable (see "Optional Extensions" below).
 When the user invokes `/seo audit`, delegate to subagents in parallel:
 1. Detect business type (SaaS, local, ecommerce, publisher, agency, other)
 2. Spawn subagents: seo-technical, seo-content, seo-schema, seo-sitemap, seo-performance, seo-visual, seo-geo
-3. If Google API credentials detected (`uv run scripts/google_auth.py --check`), also spawn seo-google agent
+3. If Google API credentials detected (`uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/google_auth.py" --check`), also spawn seo-google agent
 4. If local business detected, also spawn seo-local agent
 5. If local business detected AND DataForSEO MCP available, also spawn seo-maps agent
-6. If backlink APIs detected (`uv run scripts/backlinks_auth.py --check`), also spawn seo-backlinks agent
+6. If backlink APIs detected (`uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/backlinks_auth.py" --check`), also spawn seo-backlinks agent
 7. If Firecrawl MCP available, use `firecrawl_map` to discover all site URLs before analysis
 8. If content strategy signals detected (blog, pillar pages, topic clusters), also spawn seo-cluster agent
 9. If e-commerce detected, also spawn seo-ecommerce agent
-10. If drift baseline exists for this URL (`uv run scripts/drift_history.py <url>`), also spawn seo-drift agent
+10. If drift baseline exists for this URL (`uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/drift_history.py" <url>`), also spawn seo-drift agent
 11. Always include seo-sxo in full audits (search experience applies to all sites)
 12. Collect results and generate unified report with SEO Health Score (0-100)
 13. **Synthesize via the 10-principle framework** (see "Synthesis Methodology" below) — walk PERCEIVE → ANALYZE → VALIDATE → ACT before bucketing findings into Critical / High / Medium / Low

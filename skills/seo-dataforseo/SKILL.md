@@ -50,7 +50,7 @@ DataForSEO charges per API call. Be efficient:
 
 **Before every DataForSEO MCP call**, run cost estimation:
 ```
-uv run scripts/dataforseo_costs.py check <endpoint> [--count N]
+uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/dataforseo_costs.py" check <endpoint> [--count N]
 ```
 
 - If `"status": "approved"` → proceed with the API call
@@ -59,7 +59,7 @@ uv run scripts/dataforseo_costs.py check <endpoint> [--count N]
 
 **After each API call completes**, log the cost:
 ```
-uv run scripts/dataforseo_costs.py log <endpoint> <actual_cost>
+uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/dataforseo_costs.py" log <endpoint> <actual_cost>
 ```
 
 **User commands for cost management:**

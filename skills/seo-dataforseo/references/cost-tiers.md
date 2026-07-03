@@ -31,7 +31,7 @@
 | **Aggressive** | $50.00 | $2.00 | threshold | Agency bulk work |
 | **Unlimited** | $999.00 | -- | none | Trusted pipelines |
 
-Configure with: `uv run scripts/dataforseo_costs.py config --mode threshold --threshold 0.50 --daily-limit 10.00`
+Configure with: `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/dataforseo_costs.py" config --mode threshold --threshold 0.50 --daily-limit 10.00`
 
 ## Cost Reduction Tips
 
@@ -44,11 +44,11 @@ Configure with: `uv run scripts/dataforseo_costs.py config --mode threshold --th
 ## Approval Flow
 
 Before any DataForSEO MCP call:
-1. Run `uv run scripts/dataforseo_costs.py check <endpoint> [--count N]`
+1. Run `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/dataforseo_costs.py" check <endpoint> [--count N]`
 2. If `status: "approved"` → proceed
 3. If `status: "needs_approval"` → show cost to user, ask to confirm
 4. If `status: "blocked"` → inform user daily limit would be exceeded
-5. After call completes, log: `uv run scripts/dataforseo_costs.py log <endpoint> <cost>`
+5. After call completes, log: `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/dataforseo_costs.py" log <endpoint> <cost>`
 
 ## Warn Endpoints
 

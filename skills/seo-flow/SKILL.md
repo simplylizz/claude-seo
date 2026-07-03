@@ -82,7 +82,7 @@ Load prompt files on demand — only for the stage the user requests.
 2. Display the full index: all 41 prompts with stage, name, trigger conditions
 
 ### On `/seo flow sync`
-1. Run: `uv run scripts/sync_flow.py`
+1. Run: `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/sync_flow.py"`
 2. Display the JSON summary (files added, updated, unchanged)
 3. Show attribution notice after sync completes
 

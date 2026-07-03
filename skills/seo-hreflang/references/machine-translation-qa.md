@@ -38,7 +38,7 @@ content abuse.
 - For per-page hreflang validation, stay inside `seo-hreflang`.
 - For broader scaled-content scoring (entropy of translated pages,
   AI-pattern detection in body), defer to `seo-content` via
-  `uv run scripts/content_quality.py`.
+  `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/content_quality.py"`.
 - For "is this translated by Google's own auto-translate widget"
   detection, look for the `.goog-te-banner-frame` iframe; auto-
   translate widgets are explicitly exempted from MT-scaled-content

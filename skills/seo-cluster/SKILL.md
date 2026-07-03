@@ -80,7 +80,7 @@ the full algorithm.
 - Skip pairs where both are long-tail variants of the same head term (assume same cluster)
 
 **DataForSEO integration:** If DataForSEO MCP is available, use `serp_organic_live_advanced`
-instead of WebSearch for SERP data. Run `uv run scripts/dataforseo_costs.py check serp_organic_live_advanced --count N`
+instead of WebSearch for SERP data. Run `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/dataforseo_costs.py" check serp_organic_live_advanced --count N`
 before each batch. If `"status": "needs_approval"`, show cost estimate and ask user.
 If `"status": "blocked"`, fall back to WebSearch.
 
@@ -312,7 +312,7 @@ After cluster planning or execution completes, offer:
 
 ## Security
 
-- All URLs fetched via `uv run scripts/fetch_page.py` (SSRF protection via `validate_url()`)
+- All URLs fetched via `uv run "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/seo}/scripts/fetch_page.py"` (SSRF protection via `validate_url()`)
 - No credentials stored or transmitted
 - Output files contain no PII or API keys
 - DataForSEO cost checks run before every API call
