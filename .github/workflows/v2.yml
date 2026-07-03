@@ -37,7 +37,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.10"
+          python-version: "3.14"
 
       - name: Run manifest consistency tests
         run: uv run --group dev pytest tests/test_manifest_consistency.py -v
@@ -51,7 +51,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.10"
+          python-version: "3.14"
 
       - name: Run url_safety regression battery
         run: uv run --group dev pytest tests/test_url_safety.py -v
@@ -78,7 +78,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.10"
+          python-version: "3.14"
 
       - name: Install WeasyPrint system libraries
         # google_report.py (and its full-audit test) imports weasyprint, which

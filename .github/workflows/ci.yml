@@ -16,10 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.14
         uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.14"
 
       - name: Check Python syntax
         # Glob over every tracked script so the check never drifts as scripts
@@ -40,7 +40,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.10"
+          python-version: "3.14"
 
       - name: Install WeasyPrint system libraries
         # google_report.py (and its full-audit test) imports weasyprint, which
