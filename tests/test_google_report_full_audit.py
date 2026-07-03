@@ -6,12 +6,24 @@ import os
 import sys
 from pathlib import Path
 
+import pytest
 
 _SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")
 if _SCRIPTS not in sys.path:
     sys.path.insert(0, _SCRIPTS)
 
-import google_report  # noqa: E402
+# google_report imports matplotlib + weasyprint at module scope and sys.exit(1)s
+# if they're missing; weasyprint additionally raises OSError when its native libs
+# (pango/cairo) are absent. Catch BaseException (covers SystemExit) so an
+# unavailable report dependency skips this module instead of aborting the whole
+# suite with a collection-time INTERNALERROR.
+try:
+    import google_report  # noqa: E402
+except BaseException as exc:  # noqa: BLE001 - report deps optional in some envs
+    pytest.skip(
+        f"google_report dependencies unavailable ({exc!r})",
+        allow_module_level=True,
+    )
 
 
 def test_full_audit_html_includes_summary_categories_and_roadmap(tmp_path: Path) -> None:
