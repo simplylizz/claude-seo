@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.14"
 # dependencies = [
 #     "requests>=2.32.4,<3.0.0",
 #     "urllib3>=2.6.3,<3.0.0",

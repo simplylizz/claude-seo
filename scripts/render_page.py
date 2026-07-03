@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.14"
 # dependencies = [
 #     "playwright>=1.59.0,<2.0.0",
 #     "trafilatura>=2.0.0,<3.0.0",

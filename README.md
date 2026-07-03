@@ -304,7 +304,7 @@ Two real boundaries worth being upfront about.
 
 ## Requirements
 
-- [uv](https://docs.astral.sh/uv/) for running scripts (installs Python 3.10+ automatically if needed)
+- [uv](https://docs.astral.sh/uv/) for running scripts (installs Python 3.14+ automatically if needed)
 - Claude Code CLI
 - Optional: Playwright Chromium (auto-installed by `install.sh`) for SPA rendering and screenshots
 - Optional: Google API credentials for enriched CWV / GSC / GA4 data (see `/seo google setup`)

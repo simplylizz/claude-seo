@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.14"
 # dependencies = [
 #     "beautifulsoup4>=4.12.0,<5.0.0",
 #     "lxml>=6.0.2,<7.0.0",

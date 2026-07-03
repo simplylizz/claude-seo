@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** for running scripts (installs Python 3.10+ automatically if needed)
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** for running scripts (installs Python 3.14+ automatically if needed)
 - **Git** for cloning the repository
 - **Claude Code CLI** installed and configured
 

@@ -2,7 +2,7 @@
 name = "claude-seo"
 version = "2.0.0"
 description = "Comprehensive SEO analysis skill for Claude Code"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 license = "MIT"
 readme = "README.md"
 
@@ -34,7 +34,7 @@ dev = [
     # Report generator (scripts/google_report.py) deps, so its test can import
     # and run wherever weasyprint's native libs are present. Pins mirror the
     # PEP 723 inline metadata in google_report.py.
-    "matplotlib>=3.8.0,<4.0.0",
+    "matplotlib>=3.11.0,<4.0.0",
     "weasyprint>=69.0,<70.0",
     # Google API client, so gsc_query's test can import it (pure Python, no
     # native libs). Mirrors the PEP 723 metadata in the gsc_* scripts.
